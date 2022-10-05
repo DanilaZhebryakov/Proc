@@ -143,7 +143,7 @@ static procError_t instrDiv(Stack* stk, const char* prog){
     if(b == 0){
         return PROC_DIV0;
     }
-    serr = stackPush(stk, a*b);
+    serr = stackPush(stk, a/b);
     retStkErr(serr);
     return PROC_NOERROR;
 }

@@ -16,7 +16,6 @@ size_t stricmp_len(const char* str1, const char* str2){
 
 int main(int argc, const char *argv[]) {
 
-
     const char* inp_filename = "input.txt";
     int arg_filename = parseArg(argc, argv, "--dataset");
     if ( (arg_filename != ARG_NOT_FOUND) && (arg_filename + 1 < argc)) {
@@ -46,6 +45,7 @@ int main(int argc, const char *argv[]) {
         }
         if (err != PROC_NOERROR){
             printf("Program stopped\n");
+            printf("ip = %d\n", ip);
             if (err & PROC_HALT)
                 printf(" Halted\n");
             if (err & PROC_ERRUNK)
