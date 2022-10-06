@@ -33,19 +33,22 @@ int main(int argc, const char *argv[]) {
     Stack stk;
     stackCtor(&stk);
 
-    for (int ip = 0; ip < input_txt.length; ip++){
-        const char* str = input_txt.lines[ip].chars;
+
+    Program program = {input_txt.length, &input_txt, 0, nullptr};
+    for (program.ip = 0; program.ip < program.size; program.ip++){
+        const char* str = program.data->lines[program.ip].chars;
         procError_t err = PROC_BADCMD;
         for (int i = 0; i < INSTR_COUNT; i++){
             size_t t = stricmp_len(str, INSTR_LIST[i].name);
             if (!isgraph(str[t])){
-                err = INSTR_LIST[i].func(&stk, str + t);
+                program.arg_ptr = str + t;
+                err = INSTR_LIST[i].func(&stk, &program);
                 break;
             }
         }
         if (err != PROC_NOERROR){
             printf("Program stopped\n");
-            printf("ip = %d\n", ip);
+            printf("ip = %d\n", program.ip);
             if (err & PROC_HALT)
                 printf(" Halted\n");
             if (err & PROC_ERRUNK)
@@ -62,6 +65,7 @@ int main(int argc, const char *argv[]) {
         }
     }
     stackDump(&stk);
+    programDump(&program);
 
     stackDtor(&stk);
     deleteText(&input_txt);

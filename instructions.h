@@ -4,6 +4,7 @@
 
 #define ELEM_T int
 #include "Stack.h"
+#include "program.h"
 
 enum procError_t{
     PROC_NOERROR = 0,
@@ -18,7 +19,7 @@ enum procError_t{
 
 struct Instruction{
     uint8_t code;
-    procError_t (*func)(Stack* ,const char* prog);
+    procError_t (*func)(Stack* ,Program* prog);
     const char* name;
 };
 

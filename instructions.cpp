@@ -20,42 +20,41 @@
 
 
 
-static procError_t instrNotExists(Stack* stk, const char* prog){
+static procError_t instrNotExists(Stack* stk, Program* prog){
     return PROC_BADCMD;
 }
 
-static procError_t instrNop(Stack* stk, const char* prog){
+static procError_t instrNop(Stack* stk, Program* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrHalt(Stack* stk, const char* prog){
+static procError_t instrHalt(Stack* stk, Program* prog){
     return PROC_HALT;
 }
 
-static procError_t instrDump(Stack* stk, const char* prog){
+static procError_t instrDump(Stack* stk, Program* prog){
+    programDump(prog);
     stackDump(stk);
     return PROC_NOERROR;
 }
 
 
 
-static procError_t instrPop(Stack* stk, const char* prog){
+static procError_t instrPop(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     stackPop(stk, &serr);
     retStkErr(serr);
     return PROC_NOERROR;
 }
 
-static procError_t instrPush(Stack* stk, const char* prog){
-    int val = 0;
-    sscanf(prog, " %d", &val);
-    stackError_t serr = stackPush(stk, val);
+static procError_t instrPush(Stack* stk, Program* prog){
+    stackError_t serr = stackPush(stk, getInstrArg(prog));
     retStkErr(serr);
     return PROC_NOERROR;
 }
 
 
-static procError_t instrSwap(Stack* stk, const char* prog){
+static procError_t instrSwap(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -68,7 +67,7 @@ static procError_t instrSwap(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrDup(Stack* stk, const char* prog){
+static procError_t instrDup(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int a = stackTop(stk, &serr);
     retStkErr(serr);
@@ -78,7 +77,7 @@ static procError_t instrDup(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrCount(Stack* stk, const char* prog){
+static procError_t instrCount(Stack* stk, Program* prog){
     if(stk == nullptr)
         return PROC_ERRUNK;
 
@@ -87,7 +86,7 @@ static procError_t instrCount(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrGet(Stack* stk, const char* prog){
+static procError_t instrGet(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int a = stackPop(stk, &serr);
     retStkErr(serr);
@@ -101,7 +100,7 @@ static procError_t instrGet(Stack* stk, const char* prog){
 
 
 
-static procError_t instrAdd(Stack* stk, const char* prog){
+static procError_t instrAdd(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -112,7 +111,7 @@ static procError_t instrAdd(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrSub(Stack* stk, const char* prog){
+static procError_t instrSub(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -123,7 +122,7 @@ static procError_t instrSub(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrMul(Stack* stk, const char* prog){
+static procError_t instrMul(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -134,7 +133,7 @@ static procError_t instrMul(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrDiv(Stack* stk, const char* prog){
+static procError_t instrDiv(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -148,7 +147,7 @@ static procError_t instrDiv(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrPow(Stack* stk, const char* prog){
+static procError_t instrPow(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     int b = stackPop(stk, &serr);
     retStkErr(serr);
@@ -164,7 +163,7 @@ static procError_t instrPow(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrInp(Stack* stk, const char* prog){
+static procError_t instrInp(Stack* stk, Program* prog){
     int val = 0;
     scanf("%d", &val);
     stackError_t serr = stackPush(stk, val);
@@ -172,7 +171,7 @@ static procError_t instrInp(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrInpCh(Stack* stk, const char* prog){
+static procError_t instrInpCh(Stack* stk, Program* prog){
     int val = 0;
     scanf("%c", &val);
     stackError_t serr = stackPush(stk, val);
@@ -180,14 +179,14 @@ static procError_t instrInpCh(Stack* stk, const char* prog){
     return PROC_NOERROR;
 }
 
-static procError_t instrOut(Stack* stk, const char* prog){
+static procError_t instrOut(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     printf("%d\n", stackPop(stk, &serr));
     retStkErr(serr);
     return PROC_NOERROR;
 }
 
-static procError_t instrOutCh(Stack* stk, const char* prog){
+static procError_t instrOutCh(Stack* stk, Program* prog){
     stackError_t serr = STACK_NOERROR;
     printf("%d\n", stackPop(stk, &serr));
     retStkErr(serr);
