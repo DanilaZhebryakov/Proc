@@ -3,7 +3,6 @@
 #include<stdint.h>
 
 #define ELEM_T int
-#include "Stack.h"
 #include "proc_obj.h"
 
 enum procError_t{
@@ -20,7 +19,7 @@ enum procError_t{
 
 struct Instruction{
     uint8_t code;
-    procError_t (*func)(Stack* ,Processor* prog);
+    procError_t (*func)(Processor*);
     const char* name;
     const int hasArg;
 };

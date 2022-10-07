@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include <ctype.h>
 
 #include "Console_utils.h"
 #include "instructions.h"
 #include "file_read.h"
 #include "parseArg.h"
+
 
 size_t stricmp_len(const char* str1, const char* str2){
     const char* str1_start = str1;
@@ -45,8 +49,8 @@ int main(int argc, const char *argv[]) {
     program_data += sizeof(VERSION);
 
 
-    Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data};
-    while(proc.ip - proc.data < proc.prog_size){
+    Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data, &stk};
+    while(proc.ip - proc.prog_data < proc.prog_size){
         const uint8_t instr_code = *(proc.ip);
         proc.ip++;
 
@@ -54,16 +58,16 @@ int main(int argc, const char *argv[]) {
         procError_t err = PROC_BADCMD;
         for (int i = 0; i < INSTR_COUNT; i++){
             if (instr_code == INSTR_LIST[i].code){
-                printf_log("(%s)", INSTR_LIST[i].name);
-                err = INSTR_LIST[i].func(&stk, &proc);
+                printf_log("(%s)\n", INSTR_LIST[i].name);
+                err = INSTR_LIST[i].func(&proc);
                 break;
             }
         }
-        printf_log("\n");
 
         if (err != PROC_NOERROR){
+            printf_log("\n");
             printf("Program stopped\n");
-            printf("ip = %d\n", proc.ip - proc.data);
+            printf("ip = %d\n", proc.ip - proc.prog_data);
             if (err & PROC_HALT)
                 printf(" Halted\n");
             if (err & PROC_ERRUNK)
@@ -79,7 +83,6 @@ int main(int argc, const char *argv[]) {
             break;
         }
     }
-    stackDump(&stk);
     programDump(&proc);
 
     stackDtor(&stk);
