@@ -27,21 +27,77 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="compiler">
+				<Option output="Proc" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
+			<Target title="processor">
+				<Option output="Proc" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions -I .\standard\" />
 		</Compiler>
-		<Unit filename="Console_utils_win.cpp" />
-		<Unit filename="String.cpp" />
-		<Unit filename="debug_utils.cpp" />
-		<Unit filename="file_read.cpp" />
-		<Unit filename="instructions.cpp" />
-		<Unit filename="instructions.h" />
-		<Unit filename="logging.cpp" />
-		<Unit filename="main.cpp" />
-		<Unit filename="parseArg.cpp" />
-		<Unit filename="time_utils.cpp" />
+		<Unit filename="Console_utils.h" />
+		<Unit filename="Console_utils_win.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="Stack.h" />
+		<Unit filename="String.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="String.h" />
+		<Unit filename="asserts.h" />
+		<Unit filename="compiler_main.cpp">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="debug_utils.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="debug_utils.h" />
+		<Unit filename="file_read.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="file_read.h" />
+		<Unit filename="instructions.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="instructions.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="logging.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="logging.h" />
+		<Unit filename="main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="parseArg.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="parseArg.h" />
+		<Unit filename="proc_obj.h" />
+		<Unit filename="processor_main.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="time_utils.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="time_utils.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

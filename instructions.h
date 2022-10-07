@@ -4,7 +4,7 @@
 
 #define ELEM_T int
 #include "Stack.h"
-#include "program.h"
+#include "proc_obj.h"
 
 enum procError_t{
     PROC_NOERROR = 0,
@@ -17,10 +17,12 @@ enum procError_t{
     PROC_DIV0        = 1 << 6
 };
 
+
 struct Instruction{
     uint8_t code;
-    procError_t (*func)(Stack* ,Program* prog);
+    procError_t (*func)(Stack* ,Processor* prog);
     const char* name;
+    const int hasArg;
 };
 
 extern const struct Instruction INSTR_LIST[];

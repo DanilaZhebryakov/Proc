@@ -13,6 +13,7 @@ enum consoleColor {
 
     COLOR_INTENSE   = 0b1000,
     COLOR_DEFAULTT  = 0b1111,
+    COLOR_REDD      = 0b1100,
     COLOR_NOCHANGE  = 0b10000
 };
 

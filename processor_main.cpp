@@ -15,40 +15,55 @@ size_t stricmp_len(const char* str1, const char* str2){
 }
 
 int main(int argc, const char *argv[]) {
+    initConsole();
 
-    const char* inp_filename = "input.txt";
+    const char* inp_filename = "program.bin";
     int arg_filename = parseArg(argc, argv, "--input");
     if ( (arg_filename != ARG_NOT_FOUND) && (arg_filename + 1 < argc)) {
         inp_filename = argv[arg_filename + 1];
     }
-    Text input_txt = readFileLines(inp_filename);
-
-    if(input_txt.text_data == nullptr){
-        return 0;
-    }
-
-    initConsole();
-
 
     Stack stk;
     stackCtor(&stk);
+    size_t prog_size = 0;
+    uint8_t* input_data = (uint8_t*)readBinFile(inp_filename, &prog_size);
+
+    uint8_t* program_data = input_data;
+
+    if(*(uint32_t*)program_data != SIGNATURE){
+        error_log("Error : input program signature bad. Expected %X got %X\n", SIGNATURE, *(uint32_t*)program_data);
+        free(input_data);
+        return EXIT_FAILURE;
+    }
+    program_data += sizeof(SIGNATURE);
+
+    if(*(uint16_t*)program_data != VERSION){
+        error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)program_data);
+        free(input_data);
+        return EXIT_FAILURE;
+    }
+    program_data += sizeof(VERSION);
 
 
-    Processor program = {input_txt.length, &input_txt, 0, nullptr};
-    for (program.ip = 0; program.ip < program.size; program.ip++){
-        const char* str = program.data->lines[program.ip].chars;
+    Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data};
+    while(proc.ip - proc.data < proc.prog_size){
+        const uint8_t instr_code = *(proc.ip);
+        proc.ip++;
+
+        info_log("Instr: %X ", instr_code);
         procError_t err = PROC_BADCMD;
         for (int i = 0; i < INSTR_COUNT; i++){
-            size_t t = stricmp_len(str, INSTR_LIST[i].name);
-            if (!isgraph(str[t])){
-                program.arg_ptr = str + t;
-                err = INSTR_LIST[i].func(&stk, &program);
+            if (instr_code == INSTR_LIST[i].code){
+                printf_log("(%s)", INSTR_LIST[i].name);
+                err = INSTR_LIST[i].func(&stk, &proc);
                 break;
             }
         }
+        printf_log("\n");
+
         if (err != PROC_NOERROR){
             printf("Program stopped\n");
-            printf("ip = %d\n", program.ip);
+            printf("ip = %d\n", proc.ip - proc.data);
             if (err & PROC_HALT)
                 printf(" Halted\n");
             if (err & PROC_ERRUNK)
@@ -65,10 +80,10 @@ int main(int argc, const char *argv[]) {
         }
     }
     stackDump(&stk);
-    programDump(&program);
+    programDump(&proc);
 
     stackDtor(&stk);
-    deleteText(&input_txt);
+    free(input_data);
 
     return 0;
 }

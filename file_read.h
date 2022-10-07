@@ -29,4 +29,6 @@ String readFile( FILE* file);
 
 Text readFileLines(const char* filename);
 
+void* readBinFile(const char* filename, size_t* len);
+
 #endif

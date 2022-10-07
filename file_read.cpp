@@ -17,6 +17,32 @@ size_t getFileSize( FILE* file){
     return file_size;
 }
 
+void* readBinFile(const char* filename, size_t* len){
+    assert_retnull(filename != nullptr);
+
+    FILE* file = fopen(filename, "rb");
+    if (file == nullptr) {
+        fprintf(stderr, "File Not Found\n");
+        return nullptr;
+    }
+
+    size_t file_size = getFileSize(file)-1;
+    char* file_content = (char*)calloc(file_size, sizeof(char));
+    assert_retnull(file_content != nullptr);
+
+    size_t fread_val = fread( file_content, sizeof(char), file_size, file);
+    fclose(file);
+    if (fread_val != file_size){
+        fprintf(stderr,"Error: fread error \nFile:%s \nLine:%d \nFunc:%s\nExpected %Iu bytes ,got %Iu. \nFunction returns nullptr\n",
+                                            __FILE__,__LINE__, __PRETTY_FUNCTION__, file_size, fread_val);
+        free(file_content);
+        return nullptr;
+    }
+
+    *len = file_size;
+    return file_content;
+}
+
 String readFile( FILE* file) {
     assert_ret_err(file != nullptr, ((String){nullptr, 0}), EFAULT);
 
