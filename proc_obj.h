@@ -23,7 +23,7 @@ static int getInstrArg(Processor* prog){
 
 static void programDump(const Processor* proc){
     info_log("Program dump\n");
-    for (const uint8_t* i = proc->prog_data; i - proc->prog_data < proc->prog_size; i++){
+    for (const uint8_t* i = proc->prog_data; (i - proc->prog_data) < proc->prog_size; i++){
         printf_log("%02X ", *i);
     }
     printf_log("\n");
