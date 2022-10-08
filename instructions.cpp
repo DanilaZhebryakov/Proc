@@ -225,6 +225,30 @@ static procError_t instrOutCh(Processor* prog){
     return PROC_NOERROR;
 }
 
+static procError_t instrJmp(Processor* prog){
+    Stack* stk = prog->stk;
+    getArgVal(dst);
+    prog->ip = prog->prog_data + dst;
+    return PROC_NOERROR;
+}
+
+#define INSTR_J(_name, _cond) \
+static procError_t instrJ##_name (Processor* prog){ \
+    Stack* stk = prog->stk;                         \
+    getArgVal(dst);                                 \
+    getStackVal(b);                                 \
+    getStackVal(a);                                 \
+    if(a _cond b)                                   \
+        prog->ip = prog->prog_data + dst;           \
+    return PROC_NOERROR;                            \
+}
+
+INSTR_J(gt, > )
+INSTR_J(ge, >=)
+INSTR_J(lt, < )
+INSTR_J(le, <=)
+INSTR_J(eq, ==)
+INSTR_J(ne, !=)
 
 const struct Instruction INSTR_LIST[] = {
    {0x00, instrNotExists, "bad " },
@@ -249,9 +273,16 @@ const struct Instruction INSTR_LIST[] = {
 
    {0x0C, instrInp  , "inp"  },
    {0x0E, instrOut  , "out"  },
-   {0x11, instrInpCh, "inpch"},
-   {0x10, instrOutCh, "outch"}
+//   {0x11, instrInpCh, "inpch"},
+//  {0x10, instrOutCh, "outch"},
 
+   {0x10, instrJmp  , "jmp"  , ARG_READ},
+   {0x11, instrJgt  , "jgt"  , ARG_READ},
+   {0x12, instrJge  , "jge"  , ARG_READ},
+   {0x13, instrJlt  , "jlt"  , ARG_READ},
+   {0x14, instrJle  , "jle"  , ARG_READ},
+   {0x15, instrJeq  , "jeq"  , ARG_READ},
+   {0x16, instrJne  , "jne"  , ARG_READ}
 };
 
 const int INSTR_COUNT = sizeof(INSTR_LIST) / sizeof(Instruction);

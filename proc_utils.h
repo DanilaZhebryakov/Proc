@@ -4,7 +4,7 @@
 #include "Stack.h"
 
 const uint32_t SIGNATURE = 0xDEC0ADDE;
-const uint16_t VERSION = 10;
+const uint16_t VERSION = 12;
 
 const uint8_t MASK_CMD_CODE = 0x1F;
 const uint8_t MASK_CMD_IMM  = 0x20;
