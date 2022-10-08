@@ -18,14 +18,16 @@
 
     void perror_log_(const char* errmsg, const char* add_info);
 
+    void error_log(const char* format, ...);
+
     void warn_log(const char* format, ...);
 
     void info_log(const char* format, ...);
 
     void debug_log(const char* format, ...);
 
-    #ifdef error_log
-        #error redefinition of internal macro error_log perror_log
+    #ifdef perror_log
+        #error redefinition of internal macro Error_log perror_log
     #endif
     #define perror_log(errmsg)  do {    \
         setConsoleColor(stderr, (consoleColor)(COLOR_RED | COLOR_INTENSE), COLOR_BLACK); \
@@ -34,13 +36,13 @@
                   errmsg, strerror(errno), __FILE__, __LINE__, __PRETTY_FUNCTION__);     \
         fprintf(stderr  , "[ERROR] %s :%s\n at: \nFile:%s \nLine:%d \nFunc:%s\n",        \
                   errmsg, strerror(errno), __FILE__, __LINE__, __PRETTY_FUNCTION__);     \
-        setConsoleColor(stderr, (consoleColor)(COLOR_WHITE | COLOR_INTENSE), COLOR_BLACK);\
+        setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);\
     } while(0)
 
-    #ifdef error_log
-        #error redefinition of internal macro error_log
+    #ifdef Error_log
+        #error redefinition of internal macro Error_log
     #endif
-    #define error_log(format, ...) {                                                     \
+    #define Error_log(format, ...) {                                                     \
         setConsoleColor(stderr, (consoleColor)(COLOR_RED | COLOR_INTENSE), COLOR_BLACK);   \
         fprint_time_nodate(_logfile, time(nullptr));                                       \
         fprintf(_logfile, "[ERROR]" format , __VA_ARGS__);                                 \

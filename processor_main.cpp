@@ -36,21 +36,25 @@ int main(int argc, const char *argv[]) {
     uint8_t* program_data = input_data;
 
     if(*(uint32_t*)program_data != SIGNATURE){
-        error_log("Error : input program signature bad. Expected %X got %X\n", SIGNATURE, *(uint32_t*)program_data);
+        Error_log("Error : input program signature bad. Expected %X got %X\n", SIGNATURE, *(uint32_t*)program_data);
         free(input_data);
         return EXIT_FAILURE;
     }
     program_data += sizeof(SIGNATURE);
 
     if(*(uint16_t*)program_data != VERSION){
-        error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)program_data);
+        Error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)program_data);
         free(input_data);
         return EXIT_FAILURE;
     }
     program_data += sizeof(VERSION);
 
     printf_log("\n");
+
     Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data, &stk};
+    proc.ram_size = 100;
+    proc.ram = (int*)calloc(proc.ram_size, sizeof(int));
+
     procError_t err = procRunCode(&proc);
     printProcError(err);
 
@@ -59,6 +63,7 @@ int main(int argc, const char *argv[]) {
 
     stackDtor(&stk);
     free(input_data);
+    free(proc.ram);
 
     return 0;
 }

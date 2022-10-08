@@ -10,6 +10,10 @@
 #include "Console_utils.h"
 #include "debug_utils.h"
 
+#ifndef LOG_FILE_NAME
+    #define LOG_FILE_NAME "log.log"
+#endif
+
 static const int max_print_args = 100;
 
 FILE* initLogFile();
@@ -21,7 +25,7 @@ void printGoodbyeMsg(){
 }
 
 FILE* initLogFile(){
-    FILE* logfile = fopen("log.log", "a");
+    FILE* logfile = fopen(LOG_FILE_NAME, "a");
     if (logfile == nullptr){
         perror("Error opening log file");
     }
@@ -69,7 +73,20 @@ void printf_log(const char* format, ...){
     setConsoleColor(stderr, COLOR_WHITE, COLOR_BLACK);
     vfprintf(_logfile, format , args);
     vfprintf( stderr , format , args);
-    setConsoleColor(stderr, (consoleColor)(COLOR_WHITE | COLOR_INTENSE), COLOR_BLACK);
+    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
+    va_end(args);
+}
+
+void error_log(const char* format, ...){
+    va_list args;
+    va_start(args, max_print_args);
+    setConsoleColor(stderr, (consoleColor)(COLOR_RED | COLOR_INTENSE), COLOR_BLACK);
+    fprint_time_nodate(_logfile, time(nullptr));
+    fprintf(_logfile, "[ERROR]");
+    fprintf( stderr , "[ERROR]");
+    vfprintf(_logfile, format , args);
+    vfprintf( stderr , format , args);
+    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
     va_end(args);
 }
 
@@ -82,7 +99,7 @@ void warn_log(const char* format, ...){
     fprintf( stderr , "[WARN]");
     vfprintf(_logfile, format , args);
     vfprintf( stderr , format , args);
-    setConsoleColor(stderr, (consoleColor)(COLOR_WHITE | COLOR_INTENSE), COLOR_BLACK);
+    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
     va_end(args);
 }
 void info_log(const char* format, ...){
@@ -94,7 +111,7 @@ void info_log(const char* format, ...){
     fprintf( stderr , "[info]");
     vfprintf(_logfile, format , args);
     vfprintf( stderr , format , args);
-    setConsoleColor(stderr, (consoleColor)(COLOR_WHITE | COLOR_INTENSE), COLOR_BLACK);
+    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
     va_end(args);
 }
 
@@ -107,7 +124,7 @@ void debug_log(const char* format, ...){
     fprintf( stderr , "[DEBUG]");
     vfprintf(_logfile, format , args);
     vfprintf( stderr , format , args);
-    setConsoleColor(stderr, (consoleColor)(COLOR_WHITE | COLOR_INTENSE), COLOR_BLACK);
+    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
     va_end(args);
 }
 void dumpData(const void* begin_ptr, size_t max_size){

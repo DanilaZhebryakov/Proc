@@ -96,7 +96,7 @@ ELEM_T stackPop(Stack* stk, stackError_t *err_ptr = nullptr);
             stackUpdHashes(__stk);  \
         }                       \
         else {                  \
-            error_log("%s", "bad ptr passed to constructor\n");\
+            Error_log("%s", "bad ptr passed to constructor\n");\
         }
 #else
     #define stackCtor(__stk)    \

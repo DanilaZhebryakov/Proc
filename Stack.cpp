@@ -21,7 +21,7 @@
 #ifndef STACK_NO_PROTECT
     #define stackCheckRet(__stk, ...)  \
         if(stackError(__stk)){             \
-            error_log("%s", "Stack error");\
+            Error_log("%s", "Stack error");\
             stackDump(__stk);              \
             return __VA_ARGS__;            \
         }
@@ -32,7 +32,7 @@
 #ifndef STACK_NO_PROTECT
     #define stackCheckRetPtr(__stk, __errptr, ...)  \
         if(stackError(__stk)){                \
-            error_log("%s", "Stack error");   \
+            Error_log("%s", "Stack error");   \
             stackDump(__stk);                 \
             if(__errptr)                      \
                 *__errptr = stackError(__stk);\

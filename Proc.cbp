@@ -7,13 +7,13 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="compiler">
-				<Option output="Proc" prefix_auto="1" extension_auto="1" />
-				<Option type="0" />
+				<Option output="Assembler" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 			</Target>
 			<Target title="processor">
-				<Option output="Proc" prefix_auto="1" extension_auto="1" />
-				<Option type="0" />
+				<Option output="Processor" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 			</Target>
 		</Build>
@@ -22,50 +22,46 @@
 			<Add option="-fexceptions -I .\standard\" />
 		</Compiler>
 		<Unit filename="Console_utils.h" />
-		<Unit filename="Console_utils_win.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="Console_utils_win.cpp" />
+		<Unit filename="Stack.cpp" />
 		<Unit filename="Stack.h" />
-		<Unit filename="String.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="String.cpp" />
 		<Unit filename="String.h" />
+		<Unit filename="assembler.cpp">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="assembler.h">
+			<Option target="compiler" />
+		</Unit>
 		<Unit filename="asserts.h" />
 		<Unit filename="compiler_main.cpp">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="debug_utils.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="debug_utils.cpp" />
 		<Unit filename="debug_utils.h" />
-		<Unit filename="file_read.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="file_read.cpp" />
 		<Unit filename="file_read.h" />
-		<Unit filename="instructions.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="instructions.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="logging.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="instructions.cpp" />
+		<Unit filename="instructions.h" />
+		<Unit filename="logging.cpp" />
 		<Unit filename="logging.h" />
 		<Unit filename="main.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="parseArg.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="parseArg.cpp" />
 		<Unit filename="parseArg.h" />
-		<Unit filename="proc_obj.h" />
+		<Unit filename="proc_utils.cpp" />
+		<Unit filename="proc_utils.h" />
+		<Unit filename="processor.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="processor.h">
+			<Option target="processor" />
+		</Unit>
 		<Unit filename="processor_main.cpp">
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="time_utils.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="time_utils.cpp" />
 		<Unit filename="time_utils.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

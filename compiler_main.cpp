@@ -34,6 +34,9 @@ int main(int argc, const char *argv[]) {
 
     size_t program_size = 0;
     uint8_t* output = asmCompile(input_txt, &program_size);
+    if(output == nullptr){
+        printf("Compilation error\n");
+    }
 
     deleteText(&input_txt);
 

@@ -6,7 +6,7 @@
 
 procError_t procRunCode(Processor* proc){
     while(proc->ip - proc->prog_data < proc->prog_size){
-        const uint8_t instr_code = *(proc->ip);
+        const uint8_t instr_code = (*(proc->ip)) & MASK_CMD_CODE;
         proc->ip++;
 
         info_log("Instr: %X ", instr_code);

@@ -17,15 +17,38 @@
 
     //! pressanykey 0x03
     //! dump 0x0D +-
-#define getStackVal(_var)  \
-    int _var = stackPop(stk, &serr); \
-    retStkErr(serr); \
+#define getStackVal(_var)               \
+    int _var = 0;                       \
+    {                                   \
+        stackError_t serr = STACK_NOERROR;  \
+        _var = stackPop(stk, &serr);        \
+        retStkErr(serr);                    \
+    }
 
 
-#define pushStackVal(_val) { \
+#define pushStackVal(_val) {                  \
     stackError_t serr = stackPush(stk, _val); \
-    retStkErr(serr); \
+    retStkErr(serr);                          \
 }
+
+
+#define getArgVal(_var)             \
+    int _var = 0;                   \
+    {                               \
+        procError_t perr = getInstrArg(*(prog->ip - 1), prog, &_var);\
+        if(perr != PROC_NOERROR){   \
+            return perr;            \
+        }                           \
+    }
+
+
+#define setArgVal(_val) \
+    {                   \
+        procError_t perr = setInstrArg(*(prog->ip - 1), prog, _val);\
+        if(perr != PROC_NOERROR){   \
+            return perr; \
+        } \
+    }
 
 
 static procError_t instrNotExists(Processor* prog){
@@ -49,22 +72,24 @@ static procError_t instrDump(Processor* prog){
 
 static procError_t instrPop(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(a);
+    setArgVal(a);
+
     return PROC_NOERROR;
 }
 
 static procError_t instrPush(Processor* prog){
     Stack* stk = prog->stk;
-    pushStackVal(getInstrArg(prog));
+
+    getArgVal(a);
+    pushStackVal(a);
     return PROC_NOERROR;
 }
 
 
 static procError_t instrSwap(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(a);
     getStackVal(b);
@@ -111,7 +136,6 @@ static procError_t instrGet(Processor* prog){
 
 static procError_t instrAdd(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(b);
     getStackVal(a);
@@ -122,7 +146,6 @@ static procError_t instrAdd(Processor* prog){
 
 static procError_t instrSub(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(b);
     getStackVal(a);
@@ -133,7 +156,6 @@ static procError_t instrSub(Processor* prog){
 
 static procError_t instrMul(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(b);
     getStackVal(a);
@@ -144,12 +166,10 @@ static procError_t instrMul(Processor* prog){
 
 static procError_t instrDiv(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(b);
     getStackVal(a);
 
-    retStkErr(serr);
     if(b == 0)
         return PROC_DIV0;
 
@@ -159,7 +179,6 @@ static procError_t instrDiv(Processor* prog){
 
 static procError_t instrPow(Processor* prog){
     Stack* stk = prog->stk;
-    stackError_t serr = STACK_NOERROR;
 
     getStackVal(b);
     getStackVal(a);
@@ -215,25 +234,24 @@ const struct Instruction INSTR_LIST[] = {
    {0x02, instrHalt , "halt" },
    {0x0D, instrDump , "dump" },
 
-   {0x10, instrPop  , "pop"  },
-   {0x11, instrPush , "push" , 1},
-   {0x12, instrDup  , "dup"  },
-   {0x13, instrSwap , "swap" },
-   {0x14, instrCount, "count"},
-   {0x15, instrGet  , "get"  },
+   {0x03, instrPop  , "pop"  , ARG_WRITE},
+   {0x04, instrPush , "push" , ARG_READ},
+   {0x05, instrDup  , "dup"  },
+//   {0x13, instrSwap , "swap" },
+   {0x06, instrCount, "count"},
+//   {0x15, instrGet  , "get"  },
 
-   {0x21, instrAdd  , "add"  },
-   {0x22, instrSub  , "sub"  },
-   {0x23, instrMul  , "mul"  },
-   {0x24, instrDiv  , "div"  },
-   {0x25, instrPow  , "pow"  },
+   {0x07, instrAdd  , "add"  },
+   {0x08, instrSub  , "sub"  },
+   {0x09, instrMul  , "mul"  },
+   {0x0A, instrDiv  , "div"  },
+   {0x0B, instrPow  , "pow"  },
 
-   {0x30, instrInp  , "inp"  },
-   {0x31, instrOut  , "out"  },
-   {0x32, instrInpCh, "inpch"},
-   {0x33, instrOutCh, "outch"},
+   {0x0C, instrInp  , "inp"  },
+   {0x0E, instrOut  , "out"  },
+   {0x11, instrInpCh, "inpch"},
+   {0x10, instrOutCh, "outch"}
 
-   {0xFF, instrNotExists, ""}
 };
 
 const int INSTR_COUNT = sizeof(INSTR_LIST) / sizeof(Instruction);
