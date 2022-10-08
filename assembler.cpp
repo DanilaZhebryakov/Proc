@@ -12,9 +12,9 @@ struct label{
     uint8_t* addr;
 };
 
-static size_t stricmp_len(const char* str1, const char* str2){
+static size_t stricmp_len(const char* str1, const char* str2) {
     const char* str1_start = str1;
-    while(*str1 != '\0' && tolower(*str1) == tolower(*str2)){
+    while (*str1 != '\0' && tolower(*str1) == tolower(*str2)) {
         str1++; str2++;
     }
     return str1 - str1_start;
@@ -117,14 +117,15 @@ int parseInstrArg(const char* str, uint8_t* out, label** lbl){
 }
 
 
-uint8_t* asmCompile(Text input_txt, size_t* size_ptr){
-    label* labels = (label*)calloc(input_txt.length, sizeof(label));
-    label* labels_last = labels + input_txt.length - 1;
+uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
+    label* const  labels = (label*)calloc(input_txt.length, sizeof(label));
+    label* const  labels_last = labels + input_txt.length - 1;
+
     label* label_place_ptr = labels;
     label* label_addr_ptr = labels_last;
 
 
-    uint8_t* output = (uint8_t*)calloc(input_txt.length*(sizeof(int) + 2) + sizeof(SIGNATURE),1);
+    uint8_t* const output = (uint8_t*)calloc(input_txt.length*(sizeof(int) + 2) + sizeof(SIGNATURE),1);
 
     uint8_t* output_ptr = output;
 
@@ -134,18 +135,18 @@ uint8_t* asmCompile(Text input_txt, size_t* size_ptr){
     *(uint16_t*)output_ptr = VERSION;
     output_ptr = output_ptr + sizeof(VERSION);
 
-    uint8_t* out_prog_start = output_ptr;
+    uint8_t* const out_prog_start = output_ptr;
 
     for (size_t ip = 0; ip < input_txt.length; ip++){
         const char* str = input_txt.lines[ip].chars;
 
         printf_log("[%08X] ", output_ptr - out_prog_start);
 
-        if(*str == '\0' || *str == '#'){
+        if (*str == '\0' || *str == '#'){
             printf_log("[COMMENT]\n");
             continue;
         }
-        if(str[input_txt.lines[ip].length-1] == ':'){
+        if (str[input_txt.lines[ip].length-1] == ':'){
             label_addr_ptr->name = str;
             label_addr_ptr->addr = output_ptr;
             label_addr_ptr--;
@@ -162,13 +163,13 @@ uint8_t* asmCompile(Text input_txt, size_t* size_ptr){
                 int arg_size = parseInstrArg(str + t, output_ptr, &label_place_ptr);
 
                 printf_log("%6s (%02X) arg%X(+%d)\n",INSTR_LIST[i].name, INSTR_LIST[i].code, ((*output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
-                if(arg_size == -1){
+                if (arg_size == -1){
                     printf("%s\n", str+t);
                     free(output);
                     free(labels);
                     return nullptr;
                 }
-                if(!matchesArgReq(*output_ptr, INSTR_LIST[i].arg_req)){
+                if (!matchesArgReq(*output_ptr, INSTR_LIST[i].arg_req)){
                     instr_status = -1;
                     error_log("Error : instruction %s at line %d got incorrect argument\n", INSTR_LIST[i].name, ip);
                     free(output);
@@ -180,15 +181,15 @@ uint8_t* asmCompile(Text input_txt, size_t* size_ptr){
             }
         }
 
-        if(instr_status == 0){
+        if (instr_status == 0){
             error_log("Error : Unknown instruction at line %d\n", ip);
         }
-        if(instr_status != 1)
+        if (instr_status != 1)
             break;
     }
 
-    for(label* i = labels_last; i > label_addr_ptr; i--){
-        for(label* j = labels; j < label_place_ptr; j++){
+    for (label* i = labels_last; i > label_addr_ptr; i--){
+        for (label* j = labels; j < label_place_ptr; j++){
             size_t t = stricmp_len(i->name, j->name);
             if (i->name[t] == ':' && (j->name[t] == ' ' || j->name[t] == '\0' || j->name[t] == '+')){
                 info_log("add label %s (%X) to constant at %X\n", i->name, i->addr - out_prog_start , j->addr - out_prog_start);

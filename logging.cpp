@@ -45,7 +45,7 @@ FILE* initLogFile(){
 void printVarInfo_log(const VarInfo *var){
     setConsoleColor(stderr, COLOR_WHITE, COLOR_BLACK);
 
-    if(var != nullptr){
+    if (var != nullptr){
     fprintf(_logfile, "     Variable info:     Name: %s\n"
                       "                      Status: %s\n"
                       "                  Created at: %s :%d\n"
@@ -131,7 +131,7 @@ void dumpData(const void* begin_ptr, size_t max_size){
     printf_log("     Raw data dump: (%ld total) [ ", max_size);
     size_t i = 0;
     while (i < max_size){
-        if(!IsBadReadPtr((char*)begin_ptr + i, 1)){
+        if (!IsBadReadPtr((char*)begin_ptr + i, 1)){
             printf_log("%p ", ((uint8_t*)begin_ptr)[i]);
         }
         else{

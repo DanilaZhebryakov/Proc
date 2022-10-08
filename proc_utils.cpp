@@ -59,7 +59,7 @@ procError_t setInstrArg(uint8_t instr, Processor* proc, int val){
     int r = 0;
     if (instr & MASK_CMD_REG) {
         regn = *proc->ip;
-        if(regn == 0 || regn > REG_COUNT){
+        if (regn == 0 || regn > REG_COUNT){
             return PROC_BADREG;
         }
         r = proc->regs[regn - 1];
@@ -95,7 +95,7 @@ void programDump(const Processor* proc){
     printf_log("(%d/%d)\n", proc->ip - proc->prog_data, proc->prog_size);
 
     printf_log("    Registers: ");
-    for(int i = 0; i < REG_COUNT; i++){
+    for (int i = 0; i < REG_COUNT; i++){
         printf_log("%d ", proc->regs[i]);
     }
     printf_log("\n");

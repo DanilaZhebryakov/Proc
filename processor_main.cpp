@@ -35,14 +35,14 @@ int main(int argc, const char *argv[]) {
 
     uint8_t* program_data = input_data;
 
-    if(*(uint32_t*)program_data != SIGNATURE){
+    if (*(uint32_t*)program_data != SIGNATURE){
         Error_log("Error : input program signature bad. Expected %X got %X\n", SIGNATURE, *(uint32_t*)program_data);
         free(input_data);
         return EXIT_FAILURE;
     }
     program_data += sizeof(SIGNATURE);
 
-    if(*(uint16_t*)program_data != VERSION){
+    if (*(uint16_t*)program_data != VERSION){
         Error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)program_data);
         free(input_data);
         return EXIT_FAILURE;

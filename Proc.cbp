@@ -10,11 +10,17 @@
 				<Option output="Assembler" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Compiler>
+					<Add option='-DLOG_FILE_NAME=&quot;\&quot;assembler.log&quot;\&quot;' />
+				</Compiler>
 			</Target>
 			<Target title="processor">
 				<Option output="Processor" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Compiler>
+					<Add option='-DLOG_FILE_NAME=&quot;\&quot;processor.log&quot;\&quot;' />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
