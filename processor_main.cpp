@@ -6,6 +6,7 @@
 
 #include "Console_utils.h"
 #include "instructions.h"
+#include "processor.h"
 #include "file_read.h"
 #include "parseArg.h"
 
@@ -48,41 +49,12 @@ int main(int argc, const char *argv[]) {
     }
     program_data += sizeof(VERSION);
 
-
+    printf_log("\n");
     Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data, &stk};
-    while(proc.ip - proc.prog_data < proc.prog_size){
-        const uint8_t instr_code = *(proc.ip);
-        proc.ip++;
+    procError_t err = procRunCode(&proc);
+    printProcError(err);
 
-        info_log("Instr: %X ", instr_code);
-        procError_t err = PROC_BADCMD;
-        for (int i = 0; i < INSTR_COUNT; i++){
-            if (instr_code == INSTR_LIST[i].code){
-                printf_log("(%s)\n", INSTR_LIST[i].name);
-                err = INSTR_LIST[i].func(&proc);
-                break;
-            }
-        }
 
-        if (err != PROC_NOERROR){
-            printf_log("\n");
-            printf("Program stopped\n");
-            printf("ip = %d\n", proc.ip - proc.prog_data);
-            if (err & PROC_HALT)
-                printf(" Halted\n");
-            if (err & PROC_ERRUNK)
-                printf(" Unknown error\n");
-            if (err & PROC_BADCMD)
-                printf(" Instruction not found\n");
-            if (err & PROC_STACKEMPT)
-                printf(" Not enough elements in stack\n");
-            if (err & PROC_INT_ERROR)
-                printf(" Internal error\n");
-            if (err & PROC_DIV0)
-                printf(" Zero division error\n");
-            break;
-        }
-    }
     programDump(&proc);
 
     stackDtor(&stk);

@@ -65,10 +65,12 @@ static procError_t instrPush(Processor* prog){
 static procError_t instrSwap(Processor* prog){
     Stack* stk = prog->stk;
     stackError_t serr = STACK_NOERROR;
+
     getStackVal(a);
     getStackVal(b);
     pushStackVal(a);
     pushStackVal(b);
+
     return PROC_NOERROR;
 }
 
@@ -78,8 +80,8 @@ static procError_t instrDup(Processor* prog){
 
     int a = stackTop(stk, &serr);
     retStkErr(serr);
-
     pushStackVal(a);
+
     return PROC_NOERROR;
 }
 
@@ -89,6 +91,7 @@ static procError_t instrCount(Processor* prog){
         return PROC_ERRUNK;
 
     pushStackVal(stk->size);
+
     return PROC_NOERROR;
 }
 
@@ -112,8 +115,8 @@ static procError_t instrAdd(Processor* prog){
 
     getStackVal(b);
     getStackVal(a);
-
     pushStackVal(a+b);
+
     return PROC_NOERROR;
 }
 
@@ -123,8 +126,8 @@ static procError_t instrSub(Processor* prog){
 
     getStackVal(b);
     getStackVal(a);
-
     pushStackVal(a-b);
+
     return PROC_NOERROR;
 }
 
@@ -134,8 +137,8 @@ static procError_t instrMul(Processor* prog){
 
     getStackVal(b);
     getStackVal(a);
-
     pushStackVal(a*b);
+
     return PROC_NOERROR;
 }
 
