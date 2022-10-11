@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "instructions.h"
+#include "instructions_lib.h"
 #include "file_read.h"
 
 struct label{

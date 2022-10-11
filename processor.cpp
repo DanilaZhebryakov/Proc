@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "instructions.h"
+#include "instructions_lib.h"
 #include "logging.h"
 #include "Stack.h"
 

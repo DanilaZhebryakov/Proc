@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 #include "Console_utils.h"
-#include "instructions.h"
+#include "instructions_lib.h"
 #include "processor.h"
 #include "file_read.h"
 #include "parseArg.h"
