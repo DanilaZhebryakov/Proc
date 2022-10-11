@@ -151,7 +151,7 @@ int main(){
                 fprintf(out_file, "{0x%02X, ", instrAddr++);
                 printFuncName(out_file, instr_name);
                 fprintf(out_file, ", \"");
-                printFuncName(out_file, instr_name + strlen(INSTR_FUNC_PREFIX));
+                printFuncName(out_file, instr_name + strlen(INSTR_FUNC_NAME_PREFIX));
                 fprintf(out_file, "\"");
                 if (isWrite){
                     fprintf(out_file, ", ARG_WRITE");
