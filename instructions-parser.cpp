@@ -34,7 +34,7 @@ static bool strStartsWith(const char* s1, const char* s2){
 }
 
 size_t strcmp_prog(const char* s1, const char* s2){
-    if(*s1 == '\0'){
+    if (*s1 == '\0'){
         return 0;
     }
     const char* s1_beg = s1;
@@ -62,7 +62,7 @@ size_t strcmp_prog(const char* s1, const char* s2){
 }
 
 static void printFuncName(FILE* file, const char* str){
-    while(!isProgramSeparator(*str)){
+    while (!isProgramSeparator(*str)){
         putc(*str, file);
         str++;
     }
@@ -100,47 +100,47 @@ int main(){
 
 
     for (char* i = str.chars; i - str.chars < str.length; i++){
-        if(*i == '\\'){
+        if (*i == '\\'){
             i++;
         }
-        if(is_in_str){
+        if (is_in_str){
             if(*i == '"')
                 is_in_str = false;
             continue;
         }
-        if(is_in_chr){
+        if (is_in_chr){
             if(*i == '\'')
                 is_in_chr = false;
             continue;
         }
 
-        if(*i == '"'){
+        if (*i == '"'){
             is_in_str = true;
             continue;
         }
-        if(*i == '\''){
+        if (*i == '\''){
             is_in_chr = true;
             continue;
         }
 
-        if(*i == '{'){
+        if (*i == '{'){
             blockLvl++;
         }
-        if(*i == '}'){
+        if (*i == '}'){
             blockLvl--;
         }
 
-        if(instr_start != nullptr){
+        if (instr_start != nullptr){
             size_t t = strcmp_prog(i, INSTR_FUNC_READ);
-            if(t != 0){
+            if (t != 0){
                 isRead = true;
             }
             t = strcmp_prog(i, INSTR_FUNC_WRITE);
-            if(t != 0){
+            if (t != 0){
                 isWrite = true;
             }
-            if(blockLvl == 0){
-                if(instrAddr > 0x1F){
+            if (blockLvl == 0){
+                if (instrAddr > 0x1F){
                     printf("[ERROR] Too many instructions!");
                     break;
                 }
@@ -149,7 +149,7 @@ int main(){
                 fprintf(out_file, ", \"");
                 printFuncName(out_file, instr_name + strlen("instr"));
                 fprintf(out_file, "\"");
-                if(isWrite){
+                if (isWrite){
                     fprintf(out_file, ", ARG_WRITE");
                 }
                 else if(isRead){
@@ -161,16 +161,16 @@ int main(){
                 instr_start = nullptr;
             }
         }
-        if(blockLvl != 0)
+        if (blockLvl != 0)
             continue;
 
         size_t t = strcmp_prog(i, INSTR_FUNC_PREFIX);
-        if(t != 0){
+        if (t != 0){
             i += t;
             skipSeparators(i);
             instr_name = i;
             t = strcmp_prog(i, INSTR_FUNC_ARGS);
-            if(t != 0 && strStartsWith(i, "instr")){
+            if (t != 0 && strStartsWith(i, "instr")){
 
                 i += t;
                 instr_start = i;
