@@ -5,11 +5,15 @@
 #include <stdlib.h>
 
 #include "file_read.h"
-static const char* const INSTR_FUNC_PREFIX = "static procError_t ";
-static const char* const INSTR_FUNC_ARGS   = " # (Processor* # ) ";
+static const char* const INSTR_FUNC_PREFIX      = "static procError_t ";
+static const char* const INSTR_FUNC_NAME_PREFIX = "instr";
+static const char* const INSTR_FUNC_ARGS        = " # (Processor* # ) ";
 
 static const char* const INSTR_FUNC_READ  = "getInstrArg(";
 static const char* const INSTR_FUNC_WRITE = "setInstrArg(";
+
+#define TEMP_FILE_NAME "instructions.txt"
+
 
 
 #define skipSeparators(_str) \
@@ -71,13 +75,13 @@ static void printFuncName(FILE* file, const char* str){
 
 int main(){
 
-    int cmp_code = system("g++ instructions.h -o instructions.txt -E");
+    int cmp_code = system("g++ instructions.h -o "TEMP_FILE_NAME" -E");
     printf("Preprocessor exit code: %d\n" , cmp_code);
 
-    FILE* instr_txt = fopen("instructions.txt", "r");
+    FILE* instr_txt = fopen(TEMP_FILE_NAME, "r");
     String str = readFile(instr_txt);
     fclose(instr_txt);
-    system("rm instructions.txt");
+    system("rm "TEMP_FILE_NAME);
 
     bool is_in_str = false;
     bool is_in_chr = false;
@@ -147,7 +151,7 @@ int main(){
                 fprintf(out_file, "{0x%02X, ", instrAddr++);
                 printFuncName(out_file, instr_name);
                 fprintf(out_file, ", \"");
-                printFuncName(out_file, instr_name + strlen("instr"));
+                printFuncName(out_file, instr_name + strlen(INSTR_FUNC_PREFIX));
                 fprintf(out_file, "\"");
                 if (isWrite){
                     fprintf(out_file, ", ARG_WRITE");
@@ -170,7 +174,7 @@ int main(){
             skipSeparators(i);
             instr_name = i;
             t = strcmp_prog(i, INSTR_FUNC_ARGS);
-            if (t != 0 && strStartsWith(i, "instr")){
+            if (t != 0 && strStartsWith(i, INSTR_FUNC_NAME_PREFIX)){
 
                 i += t;
                 instr_start = i;
