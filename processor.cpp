@@ -11,14 +11,10 @@ procError_t procRunCode(Processor* proc){
 
         info_log("Instr: %X ", instr_code);
         procError_t err = PROC_BADCMD;
-        for (int i = 0; i < PROC_INSTR_COUNT; i++){
-            if (instr_code == PROC_INSTR_LIST[i].code){
-                printf_log("(%s)\n", PROC_INSTR_LIST[i].name);
-                err = PROC_INSTR_LIST[i].func(proc);
-                break;
-            }
+        if (PROC_INSTR_LIST[instr_code].func != nullptr){
+            printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
+            err = PROC_INSTR_LIST[instr_code].func(proc);
         }
-
         if (err != PROC_NOERROR){
             return err;
         }

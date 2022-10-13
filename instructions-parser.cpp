@@ -29,7 +29,7 @@ const uint8_t MAX_INSTRUCTION_CODE = 0x1F;
     }
 
 static bool isProgramSeparator(char c){
-    return isspace(c) || ispunct(c) || iscntrl(c);
+    return (isspace(c) || ispunct(c) || iscntrl(c)) && (c != '_' && c != '-');
 }
 
 static bool strStartsWith(const char* s1, const char* s2){
@@ -74,8 +74,14 @@ static void printUntilSep(FILE* file, const char* str){
     }
 }
 
+static void printAlpha(FILE* file, const char* str){
+    while (isalpha(*str)){
+        putc(*str, file);
+        str++;
+    }
+}
+
 struct InstructionEntry{
-    uint8_t code;
     const char* func_name;
     const char* name;
     bool isRead;
@@ -84,7 +90,7 @@ struct InstructionEntry{
 
 int main(){
 
-    int cmp_code = system("g++ instructions.h -o "TEMP_FILE_NAME" -E");
+    int cmp_code = system("g++ instructions.h -o " TEMP_FILE_NAME " -E");
     printf("Preprocessor exit code: %d\n" , cmp_code);
     if (cmp_code != 0){
         return EXIT_FAILURE;
@@ -99,7 +105,7 @@ int main(){
         return EXIT_FAILURE;
     }
     fclose(instr_txt);
-    system("rm "TEMP_FILE_NAME);
+    system("rm " TEMP_FILE_NAME);
 
     bool is_in_str = false;
     bool is_in_chr = false;
@@ -109,10 +115,10 @@ int main(){
     const char* instr_name = nullptr;
     bool isRead  = false;
     bool isWrite = false;
-    uint8_t instr_code = 0;
+    short unsigned int instr_code = 0; // Warning: scanf
+    uint8_t instr_code_space = 0;
 
     InstructionEntry* instructions = (InstructionEntry*)calloc(MAX_INSTRUCTION_CODE + 1, sizeof(InstructionEntry));
-    InstructionEntry* instr_save_ptr = instructions;
 
     for (char* i = str.chars; i - str.chars < str.length; i++){
         if (*i == '\\'){
@@ -155,19 +161,20 @@ int main(){
                 isWrite = true;
             }
             if (blockLvl == 0){
-                if (instr_code > MAX_INSTRUCTION_CODE){
-                    printf("[ERROR] Too many instructions!");
-                    break;
-                }
-                instr_save_ptr->code        = instr_code;
-                instr_save_ptr->func_name   = instr_name;
-                instr_save_ptr->name        = instr_name + strlen(INSTR_FUNC_NAME_PREFIX);
-                instr_save_ptr->isRead      = isRead;
-                instr_save_ptr->isWrite     = isWrite;
-                instr_save_ptr++;
-                instr_code++;
+                if ((instructions + instr_code)->name != nullptr)
+                    *(instructions + instr_code_space) = *(instructions + instr_code);
+                InstructionEntry* instr_ptr = instructions + instr_code;
+                instr_ptr->func_name   = instr_name;
+                instr_ptr->name        = instr_name + strlen(INSTR_FUNC_NAME_PREFIX);
+                instr_ptr->isRead      = isRead;
+                instr_ptr->isWrite     = isWrite;
+
+                while((instructions + instr_code_space)->name != nullptr)
+                    instr_code_space++;
+
+
                 printUntilSep(stdout, instr_name);
-                printf(" R:%d W:%d L:%d\n", isRead, isWrite, i - instr_start);
+                printf(" A:%02X R:%d W:%d L:%d\n", instr_code, isRead, isWrite, i - instr_start);
                 instr_start = nullptr;
             }
         }
@@ -181,7 +188,18 @@ int main(){
             instr_name = i;
             t = strcmp_prog(i, INSTR_FUNC_ARGS);
             if (t != 0 && strStartsWith(i, INSTR_FUNC_NAME_PREFIX)){
-
+                if (instr_code_space > MAX_INSTRUCTION_CODE){
+                    printf("[ERROR] Too many instructions!");
+                    break;
+                }
+                instr_code = instr_code_space;
+                sscanf(i, " %*[A-z]%hX", &instr_code);
+                if (instr_code > MAX_INSTRUCTION_CODE){
+                    printf("[ERROR] Bad instruction code %02X for func ");
+                    printUntilSep(stdout, i);
+                    printf("\n");
+                    break;
+                }
                 i += t;
                 instr_start = i;
                 isRead  = false;
@@ -200,18 +218,22 @@ int main(){
            "// WARNING: auto-generated!\n"
            "//DO NOT CHANGE\n\n"
            "const struct Instruction PROC_INSTR_LIST[] = {\n");
+    for (InstructionEntry* i = instructions; i <= instructions + MAX_INSTRUCTION_CODE; i++){
 
-    for (InstructionEntry* i = instructions; i < instr_save_ptr; i++){
-        fprintf(out_file, "{0x%02X, ", i->code);
-        printUntilSep(out_file, i->func_name);
-        fprintf(out_file, ", \"");
-        printUntilSep(out_file, i->name);
-        fprintf(out_file, "\"");
-        if      (i->isWrite){
-            fprintf(out_file, ", ARG_WRITE");
-        }
-        else if (i->isRead){
-            fprintf(out_file, ", ARG_READ");
+        fprintf(out_file, "{0x%02X", i - instructions);
+
+        if( i->name != nullptr){
+            fprintf(out_file, ", ");
+            printUntilSep(out_file, i->func_name);
+            fprintf(out_file, ", \"");
+            printAlpha(out_file, i->name);
+            fprintf(out_file, "\"");
+            if      (i->isWrite){
+                fprintf(out_file, ", ARG_WRITE");
+            }
+            else if (i->isRead){
+                fprintf(out_file, ", ARG_READ");
+            }
         }
         fprintf(out_file, "},\n");
     }
@@ -229,10 +251,14 @@ int main(){
            "//DO NOT CHANGE\n\n"
            "const struct CompileInstruction CMP_INSTR_LIST[] = {\n");
 
-    for (InstructionEntry* i = instructions; i < instr_save_ptr; i++){
-        fprintf(out_file, "{0x%02X, ", i->code);
+    for (InstructionEntry* i = instructions; i < instructions + MAX_INSTRUCTION_CODE; i++){
+        if( i->name == nullptr){
+            continue;
+        }
+        fprintf(out_file, "{0x%02X, ", i - instructions);
+
         fprintf(out_file, "\"");
-        printUntilSep(out_file, i->name);
+        printAlpha(out_file, i->name);
         fprintf(out_file, "\"");
         if      (i->isWrite){
             fprintf(out_file, ", ARG_WRITE");

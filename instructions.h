@@ -64,7 +64,7 @@ static procError_t instrHalt(Processor* prog){
     return PROC_HALT;
 }
 
-static procError_t instrDump(Processor* prog){
+static procError_t instrDump_0D(Processor* prog){
     programDump(prog);
     return PROC_NOERROR;
 }
