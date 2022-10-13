@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-#include "instructions_lib.h"
+#include "instructions_proc.h"
+#include "proc_utils.h"
 
 //procError_t (func*)(Stack*     , const char* prog);
 #define retStkErr(_serr)                                \

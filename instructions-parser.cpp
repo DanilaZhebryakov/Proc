@@ -12,6 +12,8 @@ static const char* const INSTR_FUNC_ARGS        = " # (Processor* # ) ";
 static const char* const INSTR_FUNC_READ  = "getInstrArg(";
 static const char* const INSTR_FUNC_WRITE = "setInstrArg(";
 
+const uint8_t MAX_INSTRUCTION_CODE = 0x1F;
+
 #define TEMP_FILE_NAME "instructions.txt"
 
 
@@ -65,21 +67,37 @@ size_t strcmp_prog(const char* s1, const char* s2){
         return 0;
 }
 
-static void printFuncName(FILE* file, const char* str){
+static void printUntilSep(FILE* file, const char* str){
     while (!isProgramSeparator(*str)){
         putc(*str, file);
         str++;
     }
 }
 
+struct InstructionEntry{
+    uint8_t code;
+    const char* func_name;
+    const char* name;
+    bool isRead;
+    bool isWrite;
+};
 
 int main(){
 
     int cmp_code = system("g++ instructions.h -o "TEMP_FILE_NAME" -E");
     printf("Preprocessor exit code: %d\n" , cmp_code);
+    if (cmp_code != 0){
+        return EXIT_FAILURE;
+    }
 
     FILE* instr_txt = fopen(TEMP_FILE_NAME, "r");
+    if (instr_txt == nullptr){
+        return EXIT_FAILURE;
+    }
     String str = readFile(instr_txt);
+    if (str.chars == nullptr){
+        return EXIT_FAILURE;
+    }
     fclose(instr_txt);
     system("rm "TEMP_FILE_NAME);
 
@@ -91,29 +109,22 @@ int main(){
     const char* instr_name = nullptr;
     bool isRead  = false;
     bool isWrite = false;
-    uint8_t instrAddr = 0;
+    uint8_t instr_code = 0;
 
-    FILE* out_file = fopen("instructions_array.cpp", "w");
-    fprintf(out_file,
-           "#include <stdio.h>\n"
-           "#include \"instructions_lib.h\"\n"
-           "#include \"instructions.h\"\n"
-           "// WARNING: auto-generated!\n"
-           "//DO NOT CHANGE\n\n"
-           "const struct Instruction INSTR_LIST[] = {\n");
-
+    InstructionEntry* instructions = (InstructionEntry*)calloc(MAX_INSTRUCTION_CODE + 1, sizeof(InstructionEntry));
+    InstructionEntry* instr_save_ptr = instructions;
 
     for (char* i = str.chars; i - str.chars < str.length; i++){
         if (*i == '\\'){
             i++;
         }
         if (is_in_str){
-            if(*i == '"')
+            if (*i == '"')
                 is_in_str = false;
             continue;
         }
         if (is_in_chr){
-            if(*i == '\'')
+            if (*i == '\'')
                 is_in_chr = false;
             continue;
         }
@@ -144,23 +155,18 @@ int main(){
                 isWrite = true;
             }
             if (blockLvl == 0){
-                if (instrAddr > 0x1F){
+                if (instr_code > MAX_INSTRUCTION_CODE){
                     printf("[ERROR] Too many instructions!");
                     break;
                 }
-                fprintf(out_file, "{0x%02X, ", instrAddr++);
-                printFuncName(out_file, instr_name);
-                fprintf(out_file, ", \"");
-                printFuncName(out_file, instr_name + strlen(INSTR_FUNC_NAME_PREFIX));
-                fprintf(out_file, "\"");
-                if (isWrite){
-                    fprintf(out_file, ", ARG_WRITE");
-                }
-                else if(isRead){
-                    fprintf(out_file, ", ARG_READ");
-                }
-                fprintf(out_file, "},\n");
-                printFuncName(stdout, instr_name);
+                instr_save_ptr->code        = instr_code;
+                instr_save_ptr->func_name   = instr_name;
+                instr_save_ptr->name        = instr_name + strlen(INSTR_FUNC_NAME_PREFIX);
+                instr_save_ptr->isRead      = isRead;
+                instr_save_ptr->isWrite     = isWrite;
+                instr_save_ptr++;
+                instr_code++;
+                printUntilSep(stdout, instr_name);
                 printf(" R:%d W:%d L:%d\n", isRead, isWrite, i - instr_start);
                 instr_start = nullptr;
             }
@@ -183,8 +189,65 @@ int main(){
             }
         }
     }
+
+
+
+    FILE* out_file = fopen("instructions_proc.cpp", "w");
+    fprintf(out_file,
+           "#include <stdio.h>\n"
+           "#include \"instructions_proc.h\"\n"
+           "#include \"instructions.h\"\n"
+           "// WARNING: auto-generated!\n"
+           "//DO NOT CHANGE\n\n"
+           "const struct Instruction PROC_INSTR_LIST[] = {\n");
+
+    for (InstructionEntry* i = instructions; i < instr_save_ptr; i++){
+        fprintf(out_file, "{0x%02X, ", i->code);
+        printUntilSep(out_file, i->func_name);
+        fprintf(out_file, ", \"");
+        printUntilSep(out_file, i->name);
+        fprintf(out_file, "\"");
+        if      (i->isWrite){
+            fprintf(out_file, ", ARG_WRITE");
+        }
+        else if (i->isRead){
+            fprintf(out_file, ", ARG_READ");
+        }
+        fprintf(out_file, "},\n");
+    }
     fprintf(out_file, "};\n");
-    fprintf(out_file, "const int INSTR_COUNT = sizeof(INSTR_LIST) / sizeof(Instruction);\n");
+    fprintf(out_file, "const int PROC_INSTR_COUNT = sizeof(PROC_INSTR_LIST) / sizeof(Instruction);\n");
 
     fclose(out_file);
+
+
+    out_file = fopen("instructions_compile.cpp", "w");
+    fprintf(out_file,
+           "#include <stdio.h>\n"
+           "#include \"instructions_compile.h\"\n"
+           "// WARNING: auto-generated!\n"
+           "//DO NOT CHANGE\n\n"
+           "const struct CompileInstruction CMP_INSTR_LIST[] = {\n");
+
+    for (InstructionEntry* i = instructions; i < instr_save_ptr; i++){
+        fprintf(out_file, "{0x%02X, ", i->code);
+        fprintf(out_file, "\"");
+        printUntilSep(out_file, i->name);
+        fprintf(out_file, "\"");
+        if      (i->isWrite){
+            fprintf(out_file, ", ARG_WRITE");
+        }
+        else if (i->isRead){
+            fprintf(out_file, ", ARG_READ");
+        }
+        fprintf(out_file, "},\n");
+    }
+    fprintf(out_file, "};\n");
+    fprintf(out_file, "const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);\n");
+
+    fclose(out_file);
+
+
+    free(str.chars);
+    nullifyString(&str);
 }

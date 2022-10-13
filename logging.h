@@ -83,9 +83,6 @@
     operation;                                                 \
     }
 
-
-    void printVarInfo_log(const VarInfo *var);
-
     void dumpData(const void* begin_ptr, size_t max_size);
 
 #endif // LOGGING_H_INCLUDED

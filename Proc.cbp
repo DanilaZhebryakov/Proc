@@ -41,11 +41,9 @@
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="Stack.cpp">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="Stack.h">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="String.cpp" />
@@ -57,18 +55,15 @@
 			<Option target="compiler" />
 		</Unit>
 		<Unit filename="asserts.h">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="compiler_main.cpp">
 			<Option target="compiler" />
 		</Unit>
 		<Unit filename="debug_utils.cpp">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="debug_utils.h">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="file_read.cpp" />
@@ -76,11 +71,26 @@
 		<Unit filename="instructions-parser.cpp">
 			<Option target="prepare-code" />
 		</Unit>
-		<Unit filename="instructions_array.cpp">
+		<Unit filename="instructions.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="instructions_compile.cpp">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="instructions_compile.h">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="instructions_proc.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="instructions_proc.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="instructions_utils.cpp">
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="instructions_lib.h">
+		<Unit filename="instructions_utils.h">
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
@@ -104,11 +114,9 @@
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="proc_utils.cpp">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="proc_utils.h">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="processor.cpp">

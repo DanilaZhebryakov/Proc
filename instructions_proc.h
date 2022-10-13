@@ -12,7 +12,7 @@ struct Instruction{
     instrArgReq_t arg_req;
 };
 
-extern const struct Instruction INSTR_LIST[];
-extern const int INSTR_COUNT;
+extern const struct Instruction PROC_INSTR_LIST[];
+extern const int PROC_INSTR_COUNT;
 
 #endif // INSTRUCTIONS_H_INCLUDED

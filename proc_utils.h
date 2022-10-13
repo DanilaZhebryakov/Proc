@@ -2,24 +2,7 @@
 #define PROC_UTILS_H_INCLUDED
 
 #include "Stack.h"
-
-const uint32_t SIGNATURE = 0xDEC0ADDE;
-const uint16_t VERSION = 15;
-
-const uint8_t MASK_CMD_CODE = 0x1F;
-const uint8_t MASK_CMD_IMM  = 0x20;
-const uint8_t MASK_CMD_REG  = 0x40;
-const uint8_t MASK_CMD_MEM  = 0x80;
-
-const uint8_t REG_COUNT = 15;
-
-enum instrArgReq_t{
-    ARG_NOARG = 0,
-    ARG_READ = 1,
-    ARG_WRITE = 2
-};
-
-bool matchesArgReq(uint8_t instr, instrArgReq_t req);
+#include "instructions_utils.h"
 
 enum procError_t{
     PROC_NOERROR     = 0,

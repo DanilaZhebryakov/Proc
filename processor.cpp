@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "instructions_lib.h"
+#include "instructions_proc.h"
 #include "logging.h"
 #include "Stack.h"
 
@@ -11,10 +11,10 @@ procError_t procRunCode(Processor* proc){
 
         info_log("Instr: %X ", instr_code);
         procError_t err = PROC_BADCMD;
-        for (int i = 0; i < INSTR_COUNT; i++){
-            if (instr_code == INSTR_LIST[i].code){
-                printf_log("(%s)\n", INSTR_LIST[i].name);
-                err = INSTR_LIST[i].func(proc);
+        for (int i = 0; i < PROC_INSTR_COUNT; i++){
+            if (instr_code == PROC_INSTR_LIST[i].code){
+                printf_log("(%s)\n", PROC_INSTR_LIST[i].name);
+                err = PROC_INSTR_LIST[i].func(proc);
                 break;
             }
         }

@@ -2,6 +2,7 @@
 #define DEBUG_UTILS_H_INCLUDED
 
 #include <stdint.h>
+#include "logging.h"
 
 enum variableStatus_t{
     VARSTATUS_NEW    = 0,
@@ -19,6 +20,7 @@ struct VarInfo{
     int line;
     const char* func;
 };
+void printVarInfo_log(const VarInfo *var);
 
 const char* strPrintable(const char* str);
 

@@ -4,8 +4,7 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "Console_utils.h"
-#include "instructions_lib.h"
+#include "logging.h"
 #include "processor.h"
 #include "file_read.h"
 #include "parseArg.h"

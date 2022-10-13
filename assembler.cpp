@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "instructions_lib.h"
+#include "instructions_compile.h"
+#include "logging.h"
 #include "file_read.h"
 
 struct label{
@@ -154,24 +155,24 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
             continue;
         }
         int instr_status = 0; //0 not found 1 ok -1 error
-        for (int i = 0; i < INSTR_COUNT; i++){
-            size_t t = stricmp_len(str, INSTR_LIST[i].name);
+        for (int i = 0; i < CMP_INSTR_COUNT; i++){
+            size_t t = stricmp_len(str, CMP_INSTR_LIST[i].name);
             if (!isgraph(str[t])){
                 instr_status = 1;
-                *output_ptr = INSTR_LIST[i].code;
+                *output_ptr = CMP_INSTR_LIST[i].code;
 
                 int arg_size = parseInstrArg(str + t, output_ptr, &label_place_ptr);
 
-                printf_log("%6s (%02X) arg%X(+%d)\n",INSTR_LIST[i].name, INSTR_LIST[i].code, ((*output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
+                printf_log("%6s (%02X) arg%X(+%d)\n",CMP_INSTR_LIST[i].name, CMP_INSTR_LIST[i].code, ((*output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
                 if (arg_size == -1){
                     printf("%s\n", str+t);
                     free(output);
                     free(labels);
                     return nullptr;
                 }
-                if (!matchesArgReq(*output_ptr, INSTR_LIST[i].arg_req)){
+                if (!matchesArgReq(*output_ptr, CMP_INSTR_LIST[i].arg_req)){
                     instr_status = -1;
-                    error_log("Error : instruction %s at line %d got incorrect argument\n", INSTR_LIST[i].name, ip);
+                    error_log("Error : instruction %s at line %d got incorrect argument\n", CMP_INSTR_LIST[i].name, ip);
                     free(output);
                     free(labels);
                     return nullptr;

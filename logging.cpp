@@ -42,31 +42,6 @@ FILE* initLogFile(){
     return logfile;
 }
 
-void printVarInfo_log(const VarInfo *var){
-    setConsoleColor(stderr, COLOR_WHITE, COLOR_BLACK);
-
-    if (var != nullptr){
-    fprintf(_logfile, "     Variable info:     Name: %s\n"
-                      "                      Status: %s\n"
-                      "                  Created at: %s :%d\n"
-                      "                 In function: %s\n",
-    strPrintable(var->name), varstatusAsString(var->status) , strPrintable(var->file), var->line, strPrintable(var->func));
-
-    fprintf( stderr , "     Variable info:     Name: %s\n"
-                      "                      Status: %s\n"
-                      "                  Created at: %s :%d\n"
-                      "                 In function: %s\n",
-    strPrintable(var->name), varstatusAsString(var->status) , strPrintable(var->file), var->line, strPrintable(var->func));
-    }
-    else{
-        fprintf(_logfile, "     Variable info: info is nullptr\n");
-        fprintf( stderr , "     Variable info: info is nullptr\n");
-    }
-
-    setConsoleColor(stderr, COLOR_DEFAULTT, COLOR_BLACK);
-
-}
-
 void printf_log(const char* format, ...){
     va_list args;
     va_start(args, max_print_args);

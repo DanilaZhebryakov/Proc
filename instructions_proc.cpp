@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "instructions_lib.h"
+#include "instructions_proc.h"
 #include "instructions.h"
 // WARNING: auto-generated!
 //DO NOT CHANGE
 
-const struct Instruction INSTR_LIST[] = {
+const struct Instruction PROC_INSTR_LIST[] = {
 {0x00, instrBad, "Bad"},
 {0x01, instrNop, "Nop"},
 {0x02, instrHalt, "Halt"},
@@ -32,4 +32,4 @@ const struct Instruction INSTR_LIST[] = {
 {0x18, instrJeq, "Jeq", ARG_READ},
 {0x19, instrJne, "Jne", ARG_READ},
 };
-const int INSTR_COUNT = sizeof(INSTR_LIST) / sizeof(Instruction);
+const int PROC_INSTR_COUNT = sizeof(PROC_INSTR_LIST) / sizeof(Instruction);
