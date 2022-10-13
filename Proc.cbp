@@ -102,9 +102,6 @@
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="main.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="parseArg.cpp">
 			<Option target="compiler" />
 			<Option target="processor" />

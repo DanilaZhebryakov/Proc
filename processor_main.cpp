@@ -52,7 +52,7 @@ int main(int argc, const char *argv[]) {
 
     Processor proc = {prog_size - sizeof(VERSION) - sizeof(SIGNATURE), program_data, program_data, &stk};
     proc.ram_size = 100;
-    proc.ram = (int*)calloc(proc.ram_size, sizeof(int));
+    proc.ram = (PROC_DATA_T*)calloc(proc.ram_size, sizeof(PROC_DATA_T));
 
     procError_t err = procRunCode(&proc);
     printProcError(err);

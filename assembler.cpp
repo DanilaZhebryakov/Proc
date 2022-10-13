@@ -41,7 +41,7 @@ static size_t stricmp_len(const char* str1, const char* str2) {
     }
 
 
-int parseInstrArg(const char* str, uint8_t* out, label** lbl){
+PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
     const char* str_beg = str;
     uint8_t* out_beg = out;
     out++;
@@ -66,7 +66,12 @@ int parseInstrArg(const char* str, uint8_t* out, label** lbl){
             out++;
         }
         else{
-            return -1; // add rXx support here at some point
+            if(*str >= 'a' && *str <= 'z' && *(str+1) == 'x'){
+                *out = (*str - 'a' + 1);
+                str += 2;
+                out++;
+            }
+            else return -1;
         }
         skipSpaces(str);
         checkForLineEnd(str)
@@ -85,8 +90,8 @@ int parseInstrArg(const char* str, uint8_t* out, label** lbl){
         (*lbl)->addr = out;
         (*lbl)++;
 
-        *(int*)out  = 0;
-        out += sizeof(int);
+        *(PROC_DATA_T*)out  = 0;
+        out += sizeof(PROC_DATA_T);
 
         while(*str != ']' && *str != '\0' && *str != '+'){
             str++;
@@ -99,7 +104,7 @@ int parseInstrArg(const char* str, uint8_t* out, label** lbl){
         }
         str++; //+
         skipSpaces(str);
-        out -= sizeof(int); //need to overwrite the constant part
+        out -= sizeof(PROC_DATA_T); //need to overwrite the constant part
     }
 
     if (!(isdigit(*str) || *str == '-')){
@@ -107,10 +112,10 @@ int parseInstrArg(const char* str, uint8_t* out, label** lbl){
         return -1;
     }
     *out_beg |= MASK_CMD_IMM;
-    int n = 0;
-    sscanf(str, "%d%n", (int*)out, &n);
+    PROC_DATA_T n = 0;
+    sscanf(str, PROC_DATA_SPEC "%n", (PROC_DATA_T*)out, &n);
     str += n;
-    out += sizeof(int);
+    out += sizeof(PROC_DATA_T);
 
     checkForLineEnd(str);
     error_log("no line end after const argument\n");
@@ -126,7 +131,7 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
     label* label_addr_ptr = labels_last;
 
 
-    uint8_t* const output = (uint8_t*)calloc(input_txt.length*(sizeof(int) + 2) + sizeof(SIGNATURE),1);
+    uint8_t* const output = (uint8_t*)calloc(input_txt.length*(sizeof(PROC_DATA_T) + 2) + sizeof(SIGNATURE),1);
 
     uint8_t* output_ptr = output;
 
@@ -194,7 +199,7 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
             size_t t = stricmp_len(i->name, j->name);
             if (i->name[t] == ':' && (j->name[t] == ' ' || j->name[t] == '\0' || j->name[t] == '+')){
                 info_log("add label %s (%X) to constant at %X\n", i->name, i->addr - out_prog_start , j->addr - out_prog_start);
-                *((int*)j->addr) += i->addr - out_prog_start;
+                *((PROC_DATA_T*)j->addr) += i->addr - out_prog_start;
             }
         }
     }

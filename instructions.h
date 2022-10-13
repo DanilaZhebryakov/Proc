@@ -19,7 +19,7 @@
     //! pressanykey 0x03
     //! dump 0x0D +-
 #define getStackVal(_var)               \
-    int _var = 0;                       \
+    PROC_DATA_T _var = 0;                       \
     {                                   \
         stackError_t serr = STACK_NOERROR;  \
         _var = stackPop(stk, &serr);        \
@@ -34,7 +34,7 @@
 
 
 #define getArgVal(_var)             \
-    int _var = 0;                   \
+    PROC_DATA_T _var = 0;                   \
     {                               \
         procError_t perr = getInstrArg(*(prog->ip - 1), prog, &_var);\
         if(perr != PROC_NOERROR){   \
@@ -104,7 +104,7 @@ static procError_t instrDup(Processor* prog){
     Stack* stk = prog->stk;
     stackError_t serr = STACK_NOERROR;
 
-    int a = stackTop(stk, &serr);
+    PROC_DATA_T a = stackTop(stk, &serr);
     retStkErr(serr);
     pushStackVal(a);
 
@@ -124,10 +124,10 @@ static procError_t instrCount(Processor* prog){
 static procError_t instrGet(Processor* prog){
     Stack* stk = prog->stk;
     stackError_t serr = STACK_NOERROR;
-    int a = stackPop(stk, &serr);
+    PROC_DATA_T a = stackPop(stk, &serr);
     retStkErr(serr);
 
-    int val = stackGet(stk, a, &serr);
+    PROC_DATA_T val = stackGet(stk, a, &serr);
     retStkErr(serr);
     pushStackVal(val);
     return PROC_NOERROR;
@@ -184,7 +184,7 @@ static procError_t instrPow(Processor* prog){
     getStackVal(b);
     getStackVal(a);
 
-    int res = 1;
+    PROC_DATA_T res = 1;
     while(b-- > 0)
         res *= a;
 
@@ -194,15 +194,15 @@ static procError_t instrPow(Processor* prog){
 
 static procError_t instrInp(Processor* prog){
     Stack* stk = prog->stk;
-    int val = 0;
-    scanf("%d", &val);
+    PROC_DATA_T val = 0;
+    scanf(PROC_DATA_SPEC , &val);
     pushStackVal(val);
     return PROC_NOERROR;
 }
 
 static procError_t instrInpCh(Processor* prog){
     Stack* stk = prog->stk;
-    int val = 0;
+    PROC_DATA_T val = 0;
     scanf("%c", &val);
     pushStackVal(val);
     return PROC_NOERROR;
@@ -212,7 +212,7 @@ static procError_t instrOut(Processor* prog){
     Stack* stk = prog->stk;
     stackError_t serr = STACK_NOERROR;
 
-    printf("%d\n", stackPop(stk, &serr));
+    printf(PROC_DATA_SPEC "\n", stackPop(stk, &serr));
     retStkErr(serr);
     return PROC_NOERROR;
 }
@@ -221,7 +221,7 @@ static procError_t instrOutCh(Processor* prog){
     Stack* stk = prog->stk;
     stackError_t serr = STACK_NOERROR;
 
-    printf("%d\n", stackPop(stk, &serr));
+    printf("%c\n", stackPop(stk, &serr));
     retStkErr(serr);
     return PROC_NOERROR;
 }

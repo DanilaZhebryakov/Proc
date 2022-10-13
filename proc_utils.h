@@ -24,13 +24,13 @@ struct Processor{
     const uint8_t* prog_data;
     const uint8_t* ip;
     Stack* stk;
-    int regs[REG_COUNT];
-    int* ram;
+    PROC_DATA_T regs[REG_COUNT];
+    PROC_DATA_T* ram;
     size_t ram_size;
 };
 
-procError_t getInstrArg(uint8_t instr, Processor* proc, int* val);
-procError_t setInstrArg(uint8_t instr, Processor* proc, int val);
+procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val);
+procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val);
 
 void programDump(const Processor* proc);
 void printProcError(procError_t err);

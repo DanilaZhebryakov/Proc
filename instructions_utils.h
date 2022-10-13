@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+typedef int PROC_DATA_T;
+#define PROC_DATA_SPEC "%d"
+
 const uint32_t SIGNATURE = 0xDEC0ADDE;
 const uint16_t VERSION = 16;
 

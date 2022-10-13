@@ -4,11 +4,11 @@
 #include "logging.h"
 #include "proc_utils.h"
 
-procError_t getInstrArg(uint8_t instr, Processor* proc, int* val){
+procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val){
     if (!hasValidReadArg(instr)) {
         return PROC_BADARG;
     }
-    int r = 0;
+    PROC_DATA_T r = 0;
     if (instr & MASK_CMD_REG) {
         uint8_t regn = *proc->ip;
         if (regn == 0 || regn > REG_COUNT){
@@ -18,8 +18,8 @@ procError_t getInstrArg(uint8_t instr, Processor* proc, int* val){
         proc->ip += 1;
     }
     if (instr & MASK_CMD_IMM) {
-        r += *(int*)(proc->ip);
-        proc->ip += sizeof(int);
+        r += *(PROC_DATA_T*)(proc->ip);
+        proc->ip += sizeof(PROC_DATA_T);
     }
     if (instr & MASK_CMD_MEM) {
         sleep(1);
@@ -30,13 +30,13 @@ procError_t getInstrArg(uint8_t instr, Processor* proc, int* val){
     return PROC_NOERROR;
 }
 
-procError_t setInstrArg(uint8_t instr, Processor* proc, int val){
+procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val){
     if (!hasValidWriteArg(instr)){
         return PROC_BADARG;
     }
 
     uint8_t regn = 0;
-    int r = 0;
+    PROC_DATA_T r = 0;
     if (instr & MASK_CMD_REG) {
         regn = *proc->ip;
         if (regn == 0 || regn > REG_COUNT){
@@ -47,8 +47,8 @@ procError_t setInstrArg(uint8_t instr, Processor* proc, int val){
     }
 
     if (instr & MASK_CMD_IMM){
-        r += *(int*)(proc->ip);
-        proc->ip += sizeof(int);
+        r += *(PROC_DATA_T*)(proc->ip);
+        proc->ip += sizeof(PROC_DATA_T);
     }
 
     if (instr & MASK_CMD_MEM){
@@ -76,7 +76,7 @@ void programDump(const Processor* proc){
 
     printf_log("    Registers: ");
     for (int i = 0; i < REG_COUNT; i++){
-        printf_log("%d ", proc->regs[i]);
+        printf_log(PROC_DATA_SPEC " ", proc->regs[i]);
     }
     printf_log("\n");
 
