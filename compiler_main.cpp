@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "Console_utils.h"
+#include "lib\Console_utils.h"
 
-#include "file_read.h"
-#include "parseArg.h"
+#include "lib\file_read.h"
+#include "lib\parseArg.h"
 #include "assembler.h"
 
 
@@ -45,6 +45,9 @@ int main(int argc, const char *argv[]){
     }
 
     FILE* out_file = fopen(out_filename, "wb");
+    if(out_file == nullptr){
+        return 1;
+    }
     fwrite(output, sizeof(*output), program_size, out_file);
     fclose(out_file);
     free(output);

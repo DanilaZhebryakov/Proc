@@ -1,8 +1,26 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "logging.h"
+#include "lib\logging.h"
 #include "proc_utils.h"
+
+void procCtor(Processor* proc){
+    Stack* stk = (Stack*)calloc(1,sizeof(*stk));
+    stackCtor(stk);
+    proc->stk = stk;
+    proc->ram_size = PROC_DEFAULT_RAM_SIZE;
+    proc->ram = (PROC_DATA_T*)calloc(proc->ram_size, sizeof(PROC_DATA_T));
+}
+
+void procDtor(Processor* proc){
+    stackDtor(proc->stk);
+
+    free(proc->stk);
+    proc->stk = nullptr;
+    free(proc->ram);
+    proc->ram = nullptr;
+    proc->ram_size = 0;
+}
 
 procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val){
     if (!hasValidReadArg(instr)) {
@@ -64,14 +82,13 @@ procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val){
 
 void programDump(const Processor* proc){
     info_log("Program dump\n");
-    for (const uint8_t* i = proc->prog_data; (i - proc->prog_data) < proc->prog_size; i++){
+    for (const uint8_t* i = proc->prog_data; i < proc->ip; i++){
+        printf_log("%02X-", *i);
+    }
+    for (const uint8_t* i = proc->ip; (i - proc->prog_data) < proc->prog_size; i++){
         printf_log("%02X ", *i);
     }
-    printf_log("\n");
-    for (const uint8_t* i = proc->prog_data; i < proc->ip; i++){
-        printf_log("---", *i);
-    }
-    printf_log("^^\n");
+
     printf_log("(%d/%d)\n", proc->ip - proc->prog_data, proc->prog_size);
 
     printf_log("    Registers: ");
@@ -103,7 +120,7 @@ void printProcError(procError_t err){
         printf_log(" Not enough elements in stack");
     if (err & PROC_INT_ERROR)
         printf_log(" Internal error");
-    if (err & PROC_DIV0)
-        printf_log(" Zero division error");
+    if (err & PROC_BADMATH)
+        printf_log(" Impossible math operation");
     printf_log("\n");
 }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "file_read.h"
+#include "lib\file_read.h"
 static const char* const INSTR_FUNC_PREFIX      = "static procError_t ";
 static const char* const INSTR_FUNC_NAME_PREFIX = "instr";
 static const char* const INSTR_FUNC_ARGS        = " # (Processor* # ) ";
@@ -90,7 +90,7 @@ struct InstructionEntry{
 
 int main(){
 
-    int cmp_code = system("g++ instructions.h -o " TEMP_FILE_NAME " -E");
+    int cmp_code = system("g++ instructions.h -I .. -I ../lib -o instructions.txt -E");
     printf("Preprocessor exit code: %d\n" , cmp_code);
     if (cmp_code != 0){
         return EXIT_FAILURE;

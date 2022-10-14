@@ -4,9 +4,10 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "instructions_compile.h"
-#include "logging.h"
-#include "file_read.h"
+
+#include "lib\logging.h"
+#include "lib\file_read.h"
+#include "instr\instructions_compile.h"
 
 struct label{
     const char* name;
@@ -20,6 +21,19 @@ static size_t stricmp_len(const char* str1, const char* str2) {
     }
     return str1 - str1_start;
 }
+
+static char literal_replaces[256];
+
+void initLiteralReplaceArray(){
+    literal_replaces['n'] = '\n';
+    literal_replaces['a'] = '\a';
+    literal_replaces['r'] = '\r';
+    literal_replaces['0'] = '\0';
+
+    literal_replaces['\\'] = '\\';
+    literal_replaces['\''] = '\'';
+}
+
 
 #define skipSpaces(_str) \
     while(*_str == ' '){ \
@@ -39,6 +53,16 @@ static size_t stricmp_len(const char* str1, const char* str2) {
         } \
         return out-out_beg; \
     }
+
+#define nextArgOrEnd(_str)   \
+    skipSpaces(_str);        \
+    checkForLineEnd(_str)    \
+    if(*_str != '+'){        \
+        error_log("no + and no line end after argument\n"); \
+        return -1;           \
+    }                        \
+    _str++;                  \
+    skipSpaces(_str);        \
 
 
 PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
@@ -73,14 +97,7 @@ PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
             }
             else return -1;
         }
-        skipSpaces(str);
-        checkForLineEnd(str)
-        if(*str != '+'){
-            error_log("no + and no line end after register argument\n");
-            return -1;
-        }
-        str++; //+
-        skipSpaces(str);
+        nextArgOrEnd(str)
     }
 
     if (*str == ':'){
@@ -96,19 +113,34 @@ PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
         while(*str != ']' && *str != '\0' && *str != '+'){
             str++;
         }
-        checkForLineEnd(str);
-        skipSpaces(str);
-        if(*str != '+'){
-            error_log("no + and no line end after label argument\n");
-            return -1;
-        }
-        str++; //+
-        skipSpaces(str);
+        nextArgOrEnd(str)
         out -= sizeof(PROC_DATA_T); //need to overwrite the constant part
     }
 
+    if (*str == '\''){
+        str++; //'
+        *out_beg |= MASK_CMD_IMM;
+        if(*str == '\\'){
+            str++;
+            *(PROC_DATA_T*)out  = literal_replaces[*str];
+        }
+        else{
+            *(PROC_DATA_T*)out  = *str;
+        }
+        out += sizeof(PROC_DATA_T);
+        str++;
+        if(*str != '\''){
+            error_log("no closing ' on char literal\n");
+            return -1;
+        }
+        str++;
+        nextArgOrEnd(str)
+
+        out -= sizeof(PROC_DATA_T);
+    }
+
     if (!(isdigit(*str) || *str == '-')){
-        error_log("no const arg and no reg arg found\n");
+        error_log("no valid arg found\n");
         return -1;
     }
     *out_beg |= MASK_CMD_IMM;
@@ -124,6 +156,8 @@ PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
 
 
 uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
+    initLiteralReplaceArray();
+
     label* const  labels = (label*)calloc(input_txt.length, sizeof(label));
     label* const  labels_last = labels + input_txt.length - 1;
 
@@ -132,7 +166,6 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
 
 
     uint8_t* const output = (uint8_t*)calloc(input_txt.length*(sizeof(PROC_DATA_T) + 2) + sizeof(SIGNATURE),1);
-
     uint8_t* output_ptr = output;
 
     *(uint32_t*)output_ptr = SIGNATURE;
@@ -188,7 +221,7 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr){
         }
 
         if (instr_status == 0){
-            error_log("Error : Unknown instruction at line %d\n", ip);
+            error_log("Error : Unknown instruction %s at line %d\n", str, ip);
         }
         if (instr_status != 1)
             break;

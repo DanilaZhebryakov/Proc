@@ -1,18 +1,18 @@
 #include <stdio.h>
 
-#include "instructions_proc.h"
-#include "logging.h"
-#include "Stack.h"
+#include "instr\instructions_proc.h"
+#include "lib\logging.h"
+#include "lib\Stack.h"
 
-procError_t procRunCode(Processor* proc){
+procError_t procRun(Processor* proc){
     while (proc->ip - proc->prog_data < proc->prog_size) {
         const uint8_t instr_code = (*(proc->ip)) & MASK_CMD_CODE;
         proc->ip++;
 
-        info_log("Instr: %X ", instr_code);
+        //info_log("Instr: %X ", instr_code);
         procError_t err = PROC_BADCMD;
         if (PROC_INSTR_LIST[instr_code].func != nullptr){
-            printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
+            //printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
             err = PROC_INSTR_LIST[instr_code].func(proc);
         }
         if (err != PROC_NOERROR){
@@ -21,5 +21,32 @@ procError_t procRunCode(Processor* proc){
     }
     return PROC_END_OF_CODE;
 }
+
+uint8_t* checkProcSignature(uint8_t* data){
+    if (*(uint32_t*)data != SIGNATURE){
+        error_log("Error : input program signature bad. Expected %X got %X\n", SIGNATURE, *(uint32_t*)data);
+        return nullptr;
+    }
+    data += sizeof(SIGNATURE);
+
+    if (*(uint16_t*)data != VERSION){
+        error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)data);
+        return nullptr;
+    }
+    data += sizeof(VERSION);
+    return data;
+}
+
+bool procSetProgram(Processor* proc, uint8_t* data, size_t data_size){
+    uint8_t* program_data = checkProcSignature(data);
+    if(program_data == nullptr)
+        return false;
+
+    proc->prog_data = program_data;
+    proc->ip        = program_data;
+    proc->prog_size = data_size - (program_data - data);
+    return true;
+}
+
 
 

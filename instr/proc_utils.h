@@ -1,8 +1,10 @@
 #ifndef PROC_UTILS_H_INCLUDED
 #define PROC_UTILS_H_INCLUDED
 
-#include "Stack.h"
+#include "lib\Stack.h"
 #include "instructions_utils.h"
+
+const int PROC_DEFAULT_RAM_SIZE = 100;
 
 enum procError_t{
     PROC_NOERROR     = 0,
@@ -15,8 +17,8 @@ enum procError_t{
     PROC_BADARG      = 1 << 4,
     PROC_STACKEMPT   = 1 << 5,
     PROC_INT_ERROR   = 1 << 6,
-    PROC_DIV0        = 1 << 7,
-    PROC_BADREG      = 1 << 8
+    PROC_BADMATH     = 1 << 7,
+    PROC_BADREG      = 1 << 9
 };
 
 struct Processor{
@@ -28,6 +30,9 @@ struct Processor{
     PROC_DATA_T* ram;
     size_t ram_size;
 };
+
+void procCtor(Processor* proc);
+void procDtor(Processor* proc);
 
 procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val);
 procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val);

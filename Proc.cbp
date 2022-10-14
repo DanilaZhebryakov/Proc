@@ -7,25 +7,44 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="compiler">
-				<Option output="Assembler" prefix_auto="1" extension_auto="1" />
+				<Option output="run/Assembler" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="run" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;assembler.log&quot;\&quot;' />
 				</Compiler>
+				<ExtraCommands>
+					<Add before="Prepare-code.exe" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 			<Target title="processor">
-				<Option output="Processor" prefix_auto="1" extension_auto="1" />
+				<Option output="run/Processor" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="run" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;processor.log&quot;\&quot;' />
 				</Compiler>
+				<ExtraCommands>
+					<Add before="Prepare-code.exe" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 			<Target title="prepare-code">
-				<Option output="Proc" prefix_auto="1" extension_auto="1" />
+				<Option output="Prepare-code" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+			</Target>
+			<Target title="disassembler">
+				<Option output="run/Disassembler" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="run" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option='-DLOG_FILE_NAME=&quot;\&quot;disassembler.log&quot;\&quot;' />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
@@ -36,38 +55,21 @@
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="Console_utils_win.cpp">
-			<Option target="compiler" />
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="Stack.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="Stack.h">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="String.cpp" />
-		<Unit filename="String.h" />
 		<Unit filename="assembler.cpp">
 			<Option target="compiler" />
 		</Unit>
 		<Unit filename="assembler.h">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="asserts.h">
-			<Option target="processor" />
-		</Unit>
 		<Unit filename="compiler_main.cpp">
 			<Option target="compiler" />
-		</Unit>
-		<Unit filename="debug_utils.cpp">
-			<Option target="processor" />
 		</Unit>
 		<Unit filename="debug_utils.h">
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="file_read.cpp" />
-		<Unit filename="file_read.h" />
+		<Unit filename="disassembler.cpp">
+			<Option target="disassembler" />
+		</Unit>
 		<Unit filename="instructions-parser.cpp">
 			<Option target="prepare-code" />
 		</Unit>
@@ -76,10 +78,9 @@
 		</Unit>
 		<Unit filename="instructions_compile.cpp">
 			<Option target="compiler" />
+			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="instructions_compile.h">
-			<Option target="compiler" />
-		</Unit>
+		<Unit filename="instructions_compile.h" />
 		<Unit filename="instructions_proc.cpp">
 			<Option target="processor" />
 		</Unit>
@@ -89,26 +90,63 @@
 		<Unit filename="instructions_utils.cpp">
 			<Option target="compiler" />
 			<Option target="processor" />
+			<Option target="disassembler" />
 		</Unit>
 		<Unit filename="instructions_utils.h">
 			<Option target="compiler" />
 			<Option target="processor" />
+			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="logging.cpp">
+		<Unit filename="lib/Console_utils.h">
+			<Option target="compiler" />
+			<Option target="processor" />
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="lib/Console_utils_win.cpp">
+			<Option target="compiler" />
+			<Option target="processor" />
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="lib/Stack.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="lib/Stack.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="lib/String.cpp" />
+		<Unit filename="lib/String.h" />
+		<Unit filename="lib/asserts.h" />
+		<Unit filename="lib/debug_utils.cpp">
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="logging.h">
+		<Unit filename="lib/debug_utils.h">
 			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="parseArg.cpp">
+		<Unit filename="lib/file_read.cpp" />
+		<Unit filename="lib/file_read.h" />
+		<Unit filename="lib/logging.cpp">
 			<Option target="compiler" />
 			<Option target="processor" />
+			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="parseArg.h">
+		<Unit filename="lib/logging.h">
 			<Option target="compiler" />
 			<Option target="processor" />
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="lib/parseArg.cpp" />
+		<Unit filename="lib/parseArg.h" />
+		<Unit filename="lib/time_utils.cpp">
+			<Option target="compiler" />
+			<Option target="processor" />
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="lib/time_utils.h">
+			<Option target="compiler" />
+			<Option target="processor" />
+			<Option target="disassembler" />
 		</Unit>
 		<Unit filename="proc_utils.cpp">
 			<Option target="processor" />
@@ -123,14 +161,6 @@
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="processor_main.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="time_utils.cpp">
-			<Option target="compiler" />
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="time_utils.h">
-			<Option target="compiler" />
 			<Option target="processor" />
 		</Unit>
 		<Extensions>
