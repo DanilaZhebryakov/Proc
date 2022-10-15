@@ -14,10 +14,6 @@
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;assembler.log&quot;\&quot;' />
 				</Compiler>
-				<ExtraCommands>
-					<Add before="Prepare-code.exe" />
-					<Mode after="always" />
-				</ExtraCommands>
 			</Target>
 			<Target title="processor">
 				<Option output="run/Processor" prefix_auto="1" extension_auto="1" />
@@ -27,13 +23,14 @@
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;processor.log&quot;\&quot;' />
 				</Compiler>
-				<ExtraCommands>
-					<Add before="Prepare-code.exe" />
-					<Mode after="always" />
-				</ExtraCommands>
+				<Linker>
+					<Add library="C:/Program_more/sigil-mingw-w64/lib/libsigil.dll.a" />
+					<Add directory="C:/Program_more/sigil-mingw-w64/lib" />
+				</Linker>
 			</Target>
 			<Target title="prepare-code">
-				<Option output="Prepare-code" prefix_auto="1" extension_auto="1" />
+				<Option output="instr/Prepare-code" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="instr" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 			</Target>
@@ -45,16 +42,24 @@
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;disassembler.log&quot;\&quot;' />
 				</Compiler>
+				<ExtraCommands>
+					<Add before="instr/Prepare-code.exe" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions -I .\standard\" />
+			<Add directory="../proc" />
+			<Add directory="C:/Program_more/SFML-2.5.1/include" />
 		</Compiler>
-		<Unit filename="Console_utils.h">
-			<Option target="compiler" />
-			<Option target="processor" />
-		</Unit>
+		<Linker>
+			<Add library="C:/Program_more/SFML-2.5.1/lib/libsfml-graphics.a" />
+			<Add library="C:/Program_more/SFML-2.5.1/lib/libsfml-window.a" />
+			<Add library="C:/Program_more/SFML-2.5.1/lib/libsfml-system.a" />
+			<Add directory="C:/Program_more/SFML-2.5.1/lib" />
+		</Linker>
 		<Unit filename="assembler.cpp">
 			<Option target="compiler" />
 		</Unit>
@@ -64,38 +69,44 @@
 		<Unit filename="compiler_main.cpp">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="debug_utils.h">
-			<Option target="processor" />
-		</Unit>
 		<Unit filename="disassembler.cpp">
 			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="instructions-parser.cpp">
+		<Unit filename="instr/instructions-parser.cpp">
 			<Option target="prepare-code" />
 		</Unit>
-		<Unit filename="instructions.h">
+		<Unit filename="instr/instructions.h">
 			<Option target="processor" />
 		</Unit>
-		<Unit filename="instructions_compile.cpp">
+		<Unit filename="instr/instructions_compile.cpp">
 			<Option target="compiler" />
 			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="instructions_compile.h" />
-		<Unit filename="instructions_proc.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="instructions_proc.h">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="instructions_utils.cpp">
+		<Unit filename="instr/instructions_compile.h">
 			<Option target="compiler" />
-			<Option target="processor" />
 			<Option target="disassembler" />
 		</Unit>
-		<Unit filename="instructions_utils.h">
-			<Option target="compiler" />
+		<Unit filename="instr/instructions_proc.cpp">
 			<Option target="processor" />
+		</Unit>
+		<Unit filename="instr/instructions_proc.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="instr/instructions_utils.cpp">
+			<Option target="processor" />
+			<Option target="compiler" />
 			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="instr/instructions_utils.h">
+			<Option target="processor" />
+			<Option target="compiler" />
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="instr/proc_utils.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="instr/proc_utils.h">
+			<Option target="processor" />
 		</Unit>
 		<Unit filename="lib/Console_utils.h">
 			<Option target="compiler" />
@@ -147,12 +158,6 @@
 			<Option target="compiler" />
 			<Option target="processor" />
 			<Option target="disassembler" />
-		</Unit>
-		<Unit filename="proc_utils.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="proc_utils.h">
-			<Option target="processor" />
 		</Unit>
 		<Unit filename="processor.cpp">
 			<Option target="processor" />

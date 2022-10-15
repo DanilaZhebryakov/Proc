@@ -73,6 +73,22 @@ static procError_t instrDump_0D(Processor* proc){
     return PROC_NOERROR;
 }
 
+static procError_t instrPause(Processor* proc){
+    sf::Event event;
+    while (1)
+    {
+        if(!((proc->window)->pollEvent(event))){
+            sf::sleep(sf::milliseconds(100));
+            continue;
+        }
+        if (event.type == sf::Event::Closed)
+            return PROC_USER_STOP;
+        if (event.type == sf::Event::KeyPressed){
+            return PROC_NOERROR;
+        }
+    }
+    return PROC_NOERROR;
+}
 
 
 static procError_t instrPop(Processor* proc){
@@ -89,7 +105,7 @@ static procError_t instrPush(Processor* proc){
 }
 
 
-static procError_t _instrSwap(Processor* proc){// can be disabled in this way
+static procError_t instrSwap(Processor* proc){// can be disabled in this way
     getStackVal(a);
     getStackVal(b);
     pushStackVal(a);
@@ -118,7 +134,7 @@ static procError_t instrCount(Processor* proc){
 }
 
 
-static procError_t _instrGet(Processor* proc){ // can be disabled in this way
+static procError_t instrGet(Processor* proc){ // can be disabled in this way
     Stack* stk = proc->stk;
     stackError_t serr = STACK_NOERROR;
     PROC_DATA_T a = stackPop(stk, &serr);

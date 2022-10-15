@@ -4,7 +4,7 @@
 #include "lib\parseArg.h"
 #include "lib\file_read.h"
 
-#include "instructions_compile.h"
+#include "instr\instructions_compile.h"
 
 void printInstrArg(FILE* file, uint8_t instr, uint8_t** arg_ptr){
 
@@ -59,10 +59,10 @@ int main(int argc, const char *argv[]){
     while(ip < input_data + file_size){
         int instr_status = 0;
         for (int i = 0; i < CMP_INSTR_COUNT; i++){
-            if (CMP_INSTR_LIST[i].code == ((*ip) & MASK_CMD_CODE)){
+            if (CMP_INSTR_LIST[i].code == *ip){
                 instr_status = 1;
                 printf("%s ", CMP_INSTR_LIST[i].name);
-                ip++;
+                ip+=2;
                 printInstrArg(stdout, *(ip-1), &ip);
                 printf("\n");
                 break;

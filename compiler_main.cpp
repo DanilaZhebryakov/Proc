@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <ctype.h>
 
-#include "lib\Console_utils.h"
+#include "lib\logging.h"
 
 #include "lib\file_read.h"
 #include "lib\parseArg.h"
@@ -46,9 +46,13 @@ int main(int argc, const char *argv[]){
 
     FILE* out_file = fopen(out_filename, "wb");
     if(out_file == nullptr){
+        error_log("File write error\n");
         return 1;
     }
-    fwrite(output, sizeof(*output), program_size, out_file);
+    if(fwrite(output, sizeof(*output), program_size, out_file) != program_size){
+        error_log("File write error\n");
+        return 1;
+    }
     fclose(out_file);
     free(output);
 

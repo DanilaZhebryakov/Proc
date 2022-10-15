@@ -12,7 +12,7 @@ static const char* const INSTR_FUNC_ARGS        = " # (Processor* # ) ";
 static const char* const INSTR_FUNC_READ  = "getInstrArg(";
 static const char* const INSTR_FUNC_WRITE = "setInstrArg(";
 
-const uint8_t MAX_INSTRUCTION_CODE = 0x1F;
+const uint8_t MAX_INSTRUCTION_CODE = 0xFF;
 
 #define TEMP_FILE_NAME "instructions.txt"
 
@@ -68,6 +68,11 @@ size_t strcmp_prog(const char* s1, const char* s2){
 }
 
 static void printUntilSep(FILE* file, const char* str){
+    if(str == nullptr){
+        fputs("nullptr", file);
+        return;
+    }
+
     while (!isProgramSeparator(*str)){
         putc(*str, file);
         str++;
@@ -75,18 +80,80 @@ static void printUntilSep(FILE* file, const char* str){
 }
 
 static void printAlpha(FILE* file, const char* str){
+    if(str == nullptr){
+        return;
+    }
     while (isalpha(*str)){
         putc(*str, file);
         str++;
     }
 }
+static void printArgInfo(FILE* file, bool isRead, bool isWrite, bool req = false){
+    if (isWrite){
+        fprintf(file, "ARG_WRITE");
+    }
+    else if (isRead){
+        fprintf(file, "ARG_READ");
+    }
+    else if(req){
+        fprintf(file, "ARG_NOARG");
+    }
+}
 
 struct InstructionEntry{
+    uint8_t code;
     const char* func_name;
     const char* name;
     bool isRead;
     bool isWrite;
 };
+
+void printInstrLine(FILE* file, const char* format, InstructionEntry* instr){
+    bool opt = false;
+    while(*format != '\0'){
+        if(opt && instr->name == nullptr){
+            if(*format == '%' && *(format+1) == ']'){
+                opt = false;
+                format++;
+            }
+            format++;
+            continue;
+        }
+
+        if(*format == '%'){
+            format++;
+            switch(*format){
+                case '%':
+                    fputc('%', file);
+                    break;
+                case 'c':
+                    fprintf(file, "0x%02X", instr->code);
+                    break;
+                case 'f':
+                    printUntilSep(file, instr->func_name);
+                    break;
+                case 'n':
+                    printAlpha(file, instr->name);
+                    break;
+                case 'a':
+                    printArgInfo(file, instr->isRead, instr->isWrite);
+                    break;
+                case '[':
+                    opt = true;
+                    break;
+                case ']':
+                    break;
+                default:
+                    printf("Unknown instr line format\n");
+                    break;
+            }
+        }
+        else{
+            fputc(*format, file);
+        }
+        format++;
+    }
+}
 
 int main(){
 
@@ -208,70 +275,68 @@ int main(){
         }
     }
 
-
-
-    FILE* out_file = fopen("instructions_proc.cpp", "w");
-    fprintf(out_file,
-           "#include <stdio.h>\n"
-           "#include \"instructions_proc.h\"\n"
-           "#include \"instructions.h\"\n"
-           "// WARNING: auto-generated!\n"
-           "//DO NOT CHANGE\n\n"
-           "const struct Instruction PROC_INSTR_LIST[] = {\n");
-    for (InstructionEntry* i = instructions; i <= instructions + MAX_INSTRUCTION_CODE; i++){
-
-        fprintf(out_file, "{0x%02X", i - instructions);
-
-        if( i->name != nullptr){
-            fprintf(out_file, ", ");
-            printUntilSep(out_file, i->func_name);
-            fprintf(out_file, ", \"");
-            printAlpha(out_file, i->name);
-            fprintf(out_file, "\"");
-            if      (i->isWrite){
-                fprintf(out_file, ", ARG_WRITE");
-            }
-            else if (i->isRead){
-                fprintf(out_file, ", ARG_READ");
-            }
-        }
-        fprintf(out_file, "},\n");
+    for (int i = 0; i <= MAX_INSTRUCTION_CODE; i++){
+        instructions[i].code = i;
     }
-    fprintf(out_file, "};\n");
-    fprintf(out_file, "const int PROC_INSTR_COUNT = sizeof(PROC_INSTR_LIST) / sizeof(Instruction);\n");
 
-    fclose(out_file);
+    Text template_txt = readFileLines("file_templates.txt");
+    FILE* out_file = nullptr;
+    for(int i = 0; i < template_txt.length; i++){
+        char* str = template_txt.lines[i].chars;
+        if(*str == '$'){
+            str++;
+            switch(*str){
+                case '$':
+                    break;
+                case 'F':
+                    str++;
+                    skipSpaces(str);
+                    if(out_file != nullptr){
+                        printf("Waring: new file without end of file\n");
+                    }
+                    out_file = fopen(str, "w");
+                    if(out_file == nullptr){
+                        printf("File write error\n");
+                        return EXIT_FAILURE;
+                    }
+                    break;
+                case '!':
+                    fclose(out_file);
+                    out_file = nullptr;
+                    break;
+                case 'L':
+                    for (InstructionEntry* i = instructions; i <= instructions + MAX_INSTRUCTION_CODE; i++){
+                        if( i->name != nullptr){
+                            printInstrLine(out_file, str+1, i);
+                            fputc('\n',out_file);
+                        }
+                    }
+                    break;
+                case 'A':
+                    for (InstructionEntry* i = instructions; i <= instructions + MAX_INSTRUCTION_CODE; i++){
+                        printInstrLine(out_file, str+1, i);
+                        fputc('\n',out_file);
+                    }
+                    break;
 
 
-    out_file = fopen("instructions_compile.cpp", "w");
-    fprintf(out_file,
-           "#include <stdio.h>\n"
-           "#include \"instructions_compile.h\"\n"
-           "// WARNING: auto-generated!\n"
-           "//DO NOT CHANGE\n\n"
-           "const struct CompileInstruction CMP_INSTR_LIST[] = {\n");
+                default:
+                    printf("Unknown command: %c\n", *str);
+                    break;
 
-    for (InstructionEntry* i = instructions; i < instructions + MAX_INSTRUCTION_CODE; i++){
-        if( i->name == nullptr){
-            continue;
+            }
         }
-        fprintf(out_file, "{0x%02X, ", i - instructions);
-
-        fprintf(out_file, "\"");
-        printAlpha(out_file, i->name);
-        fprintf(out_file, "\"");
-        if      (i->isWrite){
-            fprintf(out_file, ", ARG_WRITE");
+        else{
+            if(out_file != nullptr){
+                fputs(str, out_file);
+                fputc('\n',out_file);
+            }
         }
-        else if (i->isRead){
-            fprintf(out_file, ", ARG_READ");
-        }
-        fprintf(out_file, "},\n");
     }
-    fprintf(out_file, "};\n");
-    fprintf(out_file, "const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);\n");
-
-    fclose(out_file);
+    if(out_file != nullptr){
+        printf("Warning: file not closed until end of file\n");
+        fclose(out_file);
+    }
 
 
     free(str.chars);

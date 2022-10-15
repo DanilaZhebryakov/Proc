@@ -16,14 +16,15 @@ enum procError_t{
     PROC_ERRUNK      = 1 << 0,
     PROC_HALT        = 1 << 1,
     PROC_END_OF_CODE = 1 << 2,
+    PROC_USER_STOP   = 1 << 3,
 
-    PROC_BADCMD      = 1 << 3,
-    PROC_BADARG      = 1 << 4,
-    PROC_STACKEMPT   = 1 << 5,
-    PROC_INT_ERROR   = 1 << 6,
-    PROC_BADMATH     = 1 << 7,
-    PROC_BADRAM      = 1 << 8,
-    PROC_BADREG      = 1 << 9
+    PROC_BADCMD      = 1 << 4,
+    PROC_BADARG      = 1 << 5,
+    PROC_STACKEMPT   = 1 << 6,
+    PROC_INT_ERROR   = 1 << 7,
+    PROC_BADMATH     = 1 << 8,
+    PROC_BADRAM      = 1 << 9,
+    PROC_BADREG      = 1 << 10
 };
 
 struct Processor{

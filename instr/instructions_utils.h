@@ -1,10 +1,12 @@
+#ifndef INSTRUCTIONS_UTILS_H_INCLUDED
 #include <stdint.h>
 
+#define INSTRUCTIONS_UTILS_H_INCLUDED
 typedef int PROC_DATA_T;
 #define PROC_DATA_SPEC "%d"
 
 const uint32_t SIGNATURE = 0xDEC0ADDE;
-const uint16_t VERSION = 20;
+const uint16_t VERSION = 25;
 
 const uint8_t MASK_CMD_CODE = 0x1F;
 const uint8_t MASK_CMD_IMM  = 0x20;
@@ -24,4 +26,5 @@ bool hasValidWriteArg(uint8_t instr);
 
 bool matchesArgReq(uint8_t instr, instrArgReq_t req);
 
+#endif
 

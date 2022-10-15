@@ -128,6 +128,8 @@ void printProcError(procError_t err){
         printf_log(" Unknown error");
     if (err & PROC_END_OF_CODE)
         printf_log(" Reached end of program");
+    if (err & PROC_USER_STOP)
+        printf_log(" Stopped by user");
     if (err & PROC_BADCMD)
         printf_log(" Instruction not found");
     if (err & PROC_STACKEMPT)

@@ -7,7 +7,14 @@
 
 procError_t procRun(Processor* proc){
     while (proc->ip - proc->prog_data < proc->prog_size) {
-        const uint8_t instr_code = (*(proc->ip)) & MASK_CMD_CODE;
+        sf::Event event;
+        while ((proc->window)->pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                return PROC_USER_STOP;
+        }
+
+        const uint8_t instr_code = *(proc->ip);
         proc->ip++;
 
         #ifdef FULL_LOG
@@ -18,6 +25,7 @@ procError_t procRun(Processor* proc){
             #ifdef FULL_LOG
             printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
             #endif
+            proc->ip++;
             err = PROC_INSTR_LIST[instr_code].func(proc);
         }
         if (err != PROC_NOERROR){
@@ -35,7 +43,7 @@ uint8_t* checkProcSignature(uint8_t* data){
     data += sizeof(SIGNATURE);
 
     if (*(uint16_t*)data != VERSION){
-        error_log("Error : input program version bad Expected %n got %n\n", VERSION, *(uint16_t*)data);
+        error_log("Error : input program version bad Expected %d got %d\n", VERSION, *(uint16_t*)data);
         return nullptr;
     }
     data += sizeof(VERSION);
