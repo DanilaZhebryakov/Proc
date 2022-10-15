@@ -4,7 +4,7 @@ typedef int PROC_DATA_T;
 #define PROC_DATA_SPEC "%d"
 
 const uint32_t SIGNATURE = 0xDEC0ADDE;
-const uint16_t VERSION = 16;
+const uint16_t VERSION = 20;
 
 const uint8_t MASK_CMD_CODE = 0x1F;
 const uint8_t MASK_CMD_IMM  = 0x20;

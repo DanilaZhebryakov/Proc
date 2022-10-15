@@ -36,7 +36,7 @@ void initLiteralReplaceArray(){
 
 
 #define skipSpaces(_str) \
-    while(*_str == ' '){ \
+    while(isspace(*_str)){ \
         _str++;          \
     }
 
@@ -64,6 +64,17 @@ void initLiteralReplaceArray(){
     _str++;                  \
     skipSpaces(_str);        \
 
+int xdigit2int(char c){
+    if(c >= '0' && c <= '9'){
+        return c - '0';
+    }
+    if(c >= 'a' && c <= 'f'){
+        return 10 + c - 'a';
+    }
+    if(c >= 'A' && c <= 'F'){
+        return 10 + c - 'A';
+    }
+}
 
 PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
     const char* str_beg = str;
@@ -143,13 +154,44 @@ PROC_DATA_T parseInstrArg(const char* str, uint8_t* out, label** lbl){
         error_log("no valid arg found\n");
         return -1;
     }
+
     *out_beg |= MASK_CMD_IMM;
-    PROC_DATA_T n = 0;
-    sscanf(str, PROC_DATA_SPEC "%n", (PROC_DATA_T*)out, &n);
+    int n = 0;
+    bool is_neg = (*str == '-');
+    PROC_DATA_T val = 0;
+    if (is_neg){
+        str++;
+    }
+    if (*str == '0'){
+        str++;
+        if(*str == 'x'){
+            str++;
+            while(isxdigit(*str)){
+                val  = val << 4;
+                val |= xdigit2int(*str);
+                str++;
+            }
+        }
+        else{
+            while(*str >= '0' && *str <= '7'){
+                val  = val << 3;
+                val |= *str - '0';
+                str++;
+            }
+        }
+    }
+    else{
+        sscanf(str, PROC_DATA_SPEC "%n", &val, &n);
+    }
+    if (is_neg){
+        val = -val;
+    }
+    *(PROC_DATA_T*)out = val;
     str += n;
     out += sizeof(PROC_DATA_T);
 
     checkForLineEnd(str);
+    printf("!%s %d \n", str, val);
     error_log("no line end after const argument\n");
     return -1;
 }

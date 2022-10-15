@@ -3,16 +3,21 @@
 #include "instr\instructions_proc.h"
 #include "lib\logging.h"
 #include "lib\Stack.h"
+//#define FULL_LOG
 
 procError_t procRun(Processor* proc){
     while (proc->ip - proc->prog_data < proc->prog_size) {
         const uint8_t instr_code = (*(proc->ip)) & MASK_CMD_CODE;
         proc->ip++;
 
-        //info_log("Instr: %X ", instr_code);
+        #ifdef FULL_LOG
+        info_log("Instr: %X ", instr_code);
+        #endif
         procError_t err = PROC_BADCMD;
         if (PROC_INSTR_LIST[instr_code].func != nullptr){
-            //printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
+            #ifdef FULL_LOG
+            printf_log("(%s)\n", PROC_INSTR_LIST[instr_code].name);
+            #endif
             err = PROC_INSTR_LIST[instr_code].func(proc);
         }
         if (err != PROC_NOERROR){

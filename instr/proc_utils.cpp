@@ -82,7 +82,7 @@ procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val){
         proc->ram[r] = val;
         sf::RectangleShape shape(sf::Vector2f(PROC_PX_SIZE, PROC_PX_SIZE));
         shape.setPosition(sf::Vector2f(PROC_PX_SIZE * (r % PROC_WINDOW_WIDTH),PROC_PX_SIZE * (r / PROC_WINDOW_WIDTH)));
-        shape.setFillColor(sf::Color(val & 0xFF, (val >> 8) & 0xFF,(val >> 16) & 0xFF));
+        shape.setFillColor(sf::Color((val >> 16) & 0xFF, (val >> 8) & 0xFF, val & 0xFF));
         (*(proc->window)).draw(shape);
         (*(proc->window)).display();
     }
