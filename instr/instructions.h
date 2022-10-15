@@ -1,8 +1,11 @@
-#include <stdio.h>
-#include <math.h>
 
-#include "instructions_proc.h"
-#include "proc_utils.h"
+#ifndef NOINCLUDE
+    #include <stdio.h>
+    #include <math.h>
+
+    #include "instructions_proc.h"
+    #include "proc_utils.h"
+#endif
 
 //procError_t (func*)(Stack*     , const char* proc);
 #define retStkErr(_serr)                                \
@@ -86,7 +89,7 @@ static procError_t instrPush(Processor* proc){
 }
 
 
-static procError_t instrSwap(Processor* proc){
+static procError_t _instrSwap(Processor* proc){// can be disabled in this way
     getStackVal(a);
     getStackVal(b);
     pushStackVal(a);
@@ -115,7 +118,7 @@ static procError_t instrCount(Processor* proc){
 }
 
 
-static procError_t instrGet(Processor* proc){
+static procError_t _instrGet(Processor* proc){ // can be disabled in this way
     Stack* stk = proc->stk;
     stackError_t serr = STACK_NOERROR;
     PROC_DATA_T a = stackPop(stk, &serr);
@@ -135,9 +138,14 @@ static procError_t instrGet(Processor* proc){
         return PROC_NOERROR;    \
     }
 
-INSTR_OP(Add , + )
-INSTR_OP(Sub , - )
-INSTR_OP(Mul , * )
+INSTR_OP(Add , +  )
+INSTR_OP(Sub , -  )
+INSTR_OP(Mul , *  )
+INSTR_OP(Bsr , << )
+INSTR_OP(Bsl , >> )
+INSTR_OP(And , &  )
+INSTR_OP(Or  , |  )
+INSTR_OP(Xor , ^  )
 
 static procError_t instrDiv(Processor* proc){
     getStackVal(b);

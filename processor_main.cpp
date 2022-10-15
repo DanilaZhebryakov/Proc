@@ -4,14 +4,18 @@
 #include <stdint.h>
 #include <ctype.h>
 
+
+
 #include "lib\logging.h"
 #include "processor.h"
 #include "lib\file_read.h"
 #include "lib\parseArg.h"
 
 
+
 int main(int argc, const char *argv[]) {
     initConsole();
+
 
     const char* inp_filename = "program.bin";
     int arg_filename = parseArg(argc, argv, "--input");
@@ -26,11 +30,17 @@ int main(int argc, const char *argv[]) {
         return 0;
     }
 
+
+
+    sf::RenderWindow window(sf::VideoMode(PROC_WINDOW_HEIGHT * PROC_PX_SIZE, PROC_WINDOW_WIDTH * PROC_PX_SIZE), "Monitor");
+    window.clear(sf::Color::Black);
     Processor proc;
     procCtor(&proc);
+    proc.window = &window;
 
     if(! procSetProgram(&proc, input_data, file_size)){
         free(input_data);
+        error_log("Bad program signature or version");
         return EXIT_FAILURE;
     }
 
@@ -39,6 +49,8 @@ int main(int argc, const char *argv[]) {
 
 
     programDump(&proc);
+    procDtor(&proc);
+    window.close();
 
     return 0;
 }

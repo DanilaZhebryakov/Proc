@@ -3,8 +3,12 @@
 
 #include "lib\Stack.h"
 #include "instructions_utils.h"
+#include  <SFML/Graphics.hpp>
 
-const int PROC_DEFAULT_RAM_SIZE = 100;
+const int PROC_DEFAULT_RAM_SIZE = 400;
+const int PROC_WINDOW_WIDTH  = 20;
+const int PROC_WINDOW_HEIGHT = 20;
+const int PROC_PX_SIZE       = 10;
 
 enum procError_t{
     PROC_NOERROR     = 0,
@@ -18,6 +22,7 @@ enum procError_t{
     PROC_STACKEMPT   = 1 << 5,
     PROC_INT_ERROR   = 1 << 6,
     PROC_BADMATH     = 1 << 7,
+    PROC_BADRAM      = 1 << 8,
     PROC_BADREG      = 1 << 9
 };
 
@@ -29,6 +34,7 @@ struct Processor{
     PROC_DATA_T regs[REG_COUNT];
     PROC_DATA_T* ram;
     size_t ram_size;
+    sf::RenderWindow* window;
 };
 
 void procCtor(Processor* proc);

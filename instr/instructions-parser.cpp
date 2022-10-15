@@ -90,7 +90,7 @@ struct InstructionEntry{
 
 int main(){
 
-    int cmp_code = system("g++ instructions.h -I .. -I ../lib -o instructions.txt -E");
+    int cmp_code = system("g++ instructions.h -D NOINCLUDE -o instructions.txt -E");
     printf("Preprocessor exit code: %d\n" , cmp_code);
     if (cmp_code != 0){
         return EXIT_FAILURE;

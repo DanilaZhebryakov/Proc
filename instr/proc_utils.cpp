@@ -40,7 +40,11 @@ procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val){
         proc->ip += sizeof(PROC_DATA_T);
     }
     if (instr & MASK_CMD_MEM) {
-        sleep(1);
+        sf::sleep(sf::milliseconds(100));
+        if(r < 0 || r >= proc->ram_size){
+            return PROC_BADRAM;
+        }
+
         r = proc->ram[r];
     }
 
@@ -70,13 +74,21 @@ procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val){
     }
 
     if (instr & MASK_CMD_MEM){
-        sleep(1);
+        sf::sleep(sf::milliseconds(100));
+        if(r < 0 || r >= proc->ram_size){
+            return PROC_BADRAM;
+        }
+        (*(proc->window)).display();
         proc->ram[r] = val;
+        sf::RectangleShape shape(sf::Vector2f(PROC_PX_SIZE, PROC_PX_SIZE));
+        shape.setPosition(sf::Vector2f(PROC_PX_SIZE * (r % PROC_WINDOW_WIDTH),PROC_PX_SIZE * (r / PROC_WINDOW_WIDTH)));
+        shape.setFillColor(sf::Color(val & 0xFF, (val >> 8) & 0xFF,(val >> 16) & 0xFF));
+        (*(proc->window)).draw(shape);
+        (*(proc->window)).display();
     }
     else{
         proc->regs[regn - 1] = val;
     }
-
     return PROC_NOERROR;
 }
 
@@ -110,6 +122,8 @@ void printProcError(procError_t err){
         printf_log(" Bad argument");
     if (err & PROC_BADREG)
         printf_log(" Bad register");
+    if (err & PROC_BADRAM)
+        printf_log(" Address out of memory");
     if (err & PROC_ERRUNK)
         printf_log(" Unknown error");
     if (err & PROC_END_OF_CODE)
