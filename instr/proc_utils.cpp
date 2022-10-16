@@ -22,6 +22,16 @@ void procDtor(Processor* proc){
     proc->ram_size = 0;
 }
 
+procError_t procError(Processor* proc){
+    if(proc->prog_data == nullptr)
+        return PROC_BADPROC;
+    if(proc->ip == nullptr)
+        return PROC_BADPROC;
+    if(proc->ram == nullptr)
+        return PROC_BADPROC;
+    return PROC_NOERROR;
+}
+
 procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val){
     if (!hasValidReadArg(instr)) {
         return PROC_BADARG;
@@ -118,6 +128,8 @@ void printProcError(procError_t err){
         printf_log(" Halted");
     if (err & PROC_BADCMD)
         printf_log(" Bad command");
+    if (err & PROC_BADPROC)
+        printf_log(" Bad processor state");
     if (err & PROC_BADARG)
         printf_log(" Bad argument");
     if (err & PROC_BADREG)

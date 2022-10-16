@@ -6,6 +6,10 @@
 //#define FULL_LOG
 
 procError_t procRun(Processor* proc){
+    procError_t err = (procError(proc));
+    if(err != PROC_NOERROR){
+        return err;
+    }
     while (proc->ip - proc->prog_data < proc->prog_size) {
         sf::Event event;
         while ((proc->window)->pollEvent(event))

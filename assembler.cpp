@@ -107,14 +107,36 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
         return nullptr;
     }
 
-    for (label* i = labels_last; i > label_addr_ptr; i--){
-        for (label* j = labels; j < label_place_ptr; j++){
+    for (label* j = labels; j < label_place_ptr; j++){
+        bool found_lbl = false;
+        for (label* i = labels_last; i > label_addr_ptr; i--){
             size_t t = stricmp_len(i->name, j->name);
             if (i->name[t] == ':' && (j->name[t] == ' ' || j->name[t] == '\0' || j->name[t] == '+')){
+                if(found_lbl){
+                    error_log("Multiple definitions of label %s found\n", i->name);
+                    compilation_error = true;
+                    if(stop_on_err){
+                        break;
+                    }
+                }
                 info_log("add label %s (%X) to constant at %X\n", i->name, i->addr - out_prog_start , j->addr - out_prog_start);
                 *((PROC_DATA_T*)j->addr) += i->addr - out_prog_start;
+                found_lbl = true;
             }
         }
+        if(!found_lbl){
+            compilation_error = true;
+            error_log("Label %s undefined\n", j->name);
+        }
+        if (compilation_error && stop_on_err){
+            break;
+        }
+    }
+    if(compilation_error){
+        free(output);
+        free(labels);
+        error_log("Assembly errors occured. Output not created\n");
+        return nullptr;
     }
 
     free(labels);

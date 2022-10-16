@@ -24,7 +24,8 @@ enum procError_t{
     PROC_INT_ERROR   = 1 << 7,
     PROC_BADMATH     = 1 << 8,
     PROC_BADRAM      = 1 << 9,
-    PROC_BADREG      = 1 << 10
+    PROC_BADREG      = 1 << 10,
+    PROC_BADPROC     = 1 << 11
 };
 
 struct Processor{
@@ -41,6 +42,7 @@ struct Processor{
 void procCtor(Processor* proc);
 void procDtor(Processor* proc);
 
+procError_t procError(Processor* proc);
 procError_t getInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T* val);
 procError_t setInstrArg(uint8_t instr, Processor* proc, PROC_DATA_T val);
 
