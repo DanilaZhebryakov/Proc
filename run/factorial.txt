@@ -1,0 +1,43 @@
+push 0
+loop:
+dup
+pop rax
+dup
+out
+push ':'
+outch
+call :factorial
+push rax
+out
+push '\n'
+outch
+
+push 1
+add
+dup
+push 10
+jlt :loop
+halt
+
+
+
+factorial:
+push rax
+dup
+push 1
+jle :ret1
+dup
+push 1
+sub
+pop rax
+call :factorial
+push rax
+mul
+pop rax
+ret
+
+ret1:
+pop rax
+push 1
+pop rax
+ret

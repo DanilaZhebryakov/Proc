@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "instructions_compile.h"
+#include "instructions_disasm.h"
 // WARNING: auto-generated!
 //DO NOT CHANGE
 

@@ -1,0 +1,65 @@
+push 0
+loop1:
+dup
+pop rax
+
+push 0
+loop2:
+dup
+pop rbx
+
+call :draw_point
+
+push 1
+add
+dup
+push 20
+jlt :loop2
+pop rcx
+
+push 1
+add
+dup
+push 20
+jlt :loop1
+pause
+halt
+
+draw_point:
+
+push rax
+push 10
+sub
+dup
+mul
+
+dup
+out
+push ' '
+outch
+
+push rbx
+push 10
+sub
+dup
+mul
+
+dup
+out
+push '\n'
+outch
+
+add
+push 36
+jgt :ret
+push 0xA0A000
+push rax
+push 20
+mul
+push rbx
+add
+pop rcx
+pop [rcx]
+ret:
+
+ret

@@ -42,10 +42,6 @@
 				<Compiler>
 					<Add option='-DLOG_FILE_NAME=&quot;\&quot;disassembler.log&quot;\&quot;' />
 				</Compiler>
-				<ExtraCommands>
-					<Add before="instr/Prepare-code.exe" />
-					<Mode after="always" />
-				</ExtraCommands>
 			</Target>
 		</Build>
 		<Compiler>
@@ -60,36 +56,61 @@
 			<Add library="C:/Program_more/SFML-2.5.1/lib/libsfml-system.a" />
 			<Add directory="C:/Program_more/SFML-2.5.1/lib" />
 		</Linker>
-		<Unit filename="assembler.cpp">
+		<Unit filename="asm/arg_parser.cpp">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="assembler.h">
+		<Unit filename="asm/arg_parser.h">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="compiler_main.cpp">
+		<Unit filename="asm/assembler.cpp">
 			<Option target="compiler" />
 		</Unit>
-		<Unit filename="disassembler.cpp">
+		<Unit filename="asm/assembler.h">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="asm/compiler_main.cpp">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="asm/instructions_asm.cpp">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="asm/instructions_asm.h">
+			<Option target="compiler" />
+		</Unit>
+		<Unit filename="cpu/instructions_cpu.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/instructions_cpu.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/proc_utils.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/proc_utils.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/processor.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/processor.h">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="cpu/processor_main.cpp">
+			<Option target="processor" />
+		</Unit>
+		<Unit filename="disasm/disassembler.cpp">
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="disasm/instructions_disasm.cpp">
+			<Option target="disassembler" />
+		</Unit>
+		<Unit filename="disasm/instructions_disasm.h">
 			<Option target="disassembler" />
 		</Unit>
 		<Unit filename="instr/instructions-parser.cpp">
 			<Option target="prepare-code" />
 		</Unit>
 		<Unit filename="instr/instructions.h">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="instr/instructions_compile.cpp">
-			<Option target="compiler" />
-			<Option target="disassembler" />
-		</Unit>
-		<Unit filename="instr/instructions_compile.h">
-			<Option target="compiler" />
-			<Option target="disassembler" />
-		</Unit>
-		<Unit filename="instr/instructions_proc.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="instr/instructions_proc.h">
 			<Option target="processor" />
 		</Unit>
 		<Unit filename="instr/instructions_utils.cpp">
@@ -101,12 +122,6 @@
 			<Option target="processor" />
 			<Option target="compiler" />
 			<Option target="disassembler" />
-		</Unit>
-		<Unit filename="instr/proc_utils.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="instr/proc_utils.h">
-			<Option target="processor" />
 		</Unit>
 		<Unit filename="lib/Console_utils.h">
 			<Option target="compiler" />
@@ -158,15 +173,6 @@
 			<Option target="compiler" />
 			<Option target="processor" />
 			<Option target="disassembler" />
-		</Unit>
-		<Unit filename="processor.cpp">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="processor.h">
-			<Option target="processor" />
-		</Unit>
-		<Unit filename="processor_main.cpp">
-			<Option target="processor" />
 		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />

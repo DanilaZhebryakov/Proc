@@ -7,7 +7,7 @@
 
 #include "lib\logging.h"
 #include "lib\file_read.h"
-#include "instr\instructions_compile.h"
+#include "instructions_asm.h"
 #include "arg_parser.h"
 
 static size_t stricmp_len(const char* str1, const char* str2) {
@@ -37,10 +37,10 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
     uint8_t* output_ptr = output;
 
     *(uint32_t*)output_ptr = SIGNATURE;
-    output_ptr = output_ptr + sizeof(SIGNATURE);
+    output_ptr += sizeof(SIGNATURE);
 
     *(uint16_t*)output_ptr = VERSION;
-    output_ptr = output_ptr + sizeof(VERSION);
+    output_ptr += sizeof(VERSION);
 
     uint8_t* const out_prog_start = output_ptr;
 

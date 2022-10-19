@@ -1,0 +1,167 @@
+inp
+push 1000
+mul
+pop rax
+
+inp
+push 1000
+mul
+pop rbx
+
+inp
+push 1000
+mul
+pop rcx
+
+push rax
+push 0
+jeq :solve_linear
+
+push rbx
+push rbx
+mul
+push 4
+push rax 
+push rcx
+mul
+mul
+sub
+dup
+push 0
+jlt :nosol
+
+sqrt
+pop rdx
+
+#calculate number of roots
+push 1
+push rdx
+push 0
+jeq :lbl
+push 1
+add
+lbl:
+out
+call :roots
+
+
+push rdx
+push rbx
+add
+push -1
+mul
+pop rex
+call :out_root_sq
+
+push rdx
+push 0
+jeq :halt
+
+push rdx
+push rbx
+sub
+pop rex
+call :out_root_sq
+
+halt:
+halt
+
+
+#begin of functions
+out_root_sq:
+ push rex
+ push 1000
+ mul
+ push 2
+ div
+ push rax
+ div
+ pop rex
+
+ out_frac:
+  push rex
+  push 0
+  jge :out_fracp
+   push '-'
+   outch
+   push rex
+   push -1
+   mul
+   pop rex
+  out_fracp:
+
+  push rex
+  dup
+  push 1000
+  div
+  dup
+  out
+  push 1000
+  mul
+  sub
+  push '.'
+  outch
+  out
+  push '\n'
+  outch
+ ret
+
+solve_linear:
+ push rbx
+ push 0
+ jeq :sol0st
+ push 1
+ out
+ call :roots
+
+ push -1000
+ push rcx
+ mul
+ push rbx
+ div
+ pop rex
+ call :out_frac
+ halt
+
+sol0st:
+  push rcx
+  push 0
+  jne :nosol
+  jmp :infsol
+
+nosol:
+push 'N'
+outch
+push 'o'
+outch
+call :roots
+halt
+
+infsol:
+push 'I'
+outch
+push 'n'
+outch
+push 'f'
+outch
+call :roots
+halt
+
+roots:
+push ' '
+outch
+push 'R'
+outch
+push 'o'
+outch
+push 'o'
+outch
+push 't'
+outch
+push 's'
+outch
+push '\n'
+outch
+ret
+
+

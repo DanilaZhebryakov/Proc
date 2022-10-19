@@ -2,9 +2,6 @@
 #ifndef NOINCLUDE
     #include <stdio.h>
     #include <math.h>
-
-    #include "instructions_proc.h"
-    #include "proc_utils.h"
 #endif
 
 //procError_t (func*)(Stack*     , const char* proc);
@@ -180,6 +177,7 @@ static procError_t instrSqrt(Processor* proc){
         return PROC_BADMATH;
 
     pushStackVal((PROC_DATA_T)sqrt(a));
+    return PROC_NOERROR;
 }
 
 static procError_t instrPow(Processor* proc){

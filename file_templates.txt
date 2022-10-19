@@ -1,0 +1,51 @@
+$$ data file templates
+$$ supported operations:
+$$ $F starts a new file
+$$ $! ends a file
+$$ $A adds an array of format-lines (ordered by code)
+$$ $L adds a list of format-lines (unordered)
+$$ format lines: %c = code
+$$               %f = function
+$$               %n = name
+$$               %a = argument type
+
+$F cpu\instructions_cpu.cpp
+$$
+#include <stdio.h>
+#include "instructions_cpu.h"
+#include "instr\instructions.h"
+// WARNING: auto-generated!
+//DO NOT CHANGE
+
+
+const struct Instruction PROC_INSTR_LIST[] = {
+$A {%c%[, %f, "%n", %a%]},
+};
+const int PROC_INSTR_COUNT = sizeof(PROC_INSTR_LIST) / sizeof(Instruction);
+$!
+
+$F asm\instructions_asm.cpp
+$$
+#include <stdio.h>
+#include "instructions_asm.h"
+// WARNING: auto-generated!
+//DO NOT CHANGE
+
+const struct CompileInstruction CMP_INSTR_LIST[] = {
+$L {%c, "%n", %a},
+};
+const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);
+$!
+
+$F disasm\instructions_disasm.cpp
+$$
+#include <stdio.h>
+#include "instructions_disasm.h"
+// WARNING: auto-generated!
+//DO NOT CHANGE
+
+const struct CompileInstruction CMP_INSTR_LIST[] = {
+$L {%c, "%n", %a},
+};
+const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);
+$!

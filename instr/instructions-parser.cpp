@@ -157,7 +157,7 @@ void printInstrLine(FILE* file, const char* format, InstructionEntry* instr){
 
 int main(){
 
-    int cmp_code = system("g++ instructions.h -D NOINCLUDE -o instructions.txt -E");
+    int cmp_code = system("g++ instr/instructions.h -E -D NOINCLUDE -o " TEMP_FILE_NAME);
     printf("Preprocessor exit code: %d\n" , cmp_code);
     if (cmp_code != 0){
         return EXIT_FAILURE;

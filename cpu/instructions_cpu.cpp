@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "instructions_proc.h"
-#include "instructions.h"
+#include "instructions_cpu.h"
+#include "instr\instructions.h"
 // WARNING: auto-generated!
 //DO NOT CHANGE
 

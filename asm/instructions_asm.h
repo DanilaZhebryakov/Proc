@@ -1,6 +1,6 @@
 #ifndef INSTRUCTIONS_COMPILE_H_INCLUDED
 #define INSTRUCTIONS_COMPILE_H_INCLUDED
-    #include "instructions_utils.h"
+    #include "instr\instructions_utils.h"
     struct CompileInstruction{
         uint8_t code;
         const char* name;

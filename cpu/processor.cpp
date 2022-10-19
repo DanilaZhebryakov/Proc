@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "instr\instructions_proc.h"
+#include "instructions_cpu.h"
 #include "lib\logging.h"
 #include "lib\Stack.h"
 //#define FULL_LOG

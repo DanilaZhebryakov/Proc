@@ -1,7 +1,7 @@
 #ifndef PROCESSOR_H_INCLUDED
 #define PROCESSOR_H_INCLUDED
 
-#include "instr\proc_utils.h"
+#include "proc_utils.h"
 
 procError_t procRun(Processor* proc);
 

@@ -1,0 +1,19 @@
+push -1
+loop:
+push 1
+add
+dup
+pop rax
+push 255
+push rax
+bsr
+pop [rax]
+dup
+out
+push '\n'
+outch
+dup
+push 399
+jlt :loop
+inp
+halt

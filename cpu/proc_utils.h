@@ -2,7 +2,7 @@
 #define PROC_UTILS_H_INCLUDED
 
 #include "lib\Stack.h"
-#include "instructions_utils.h"
+#include "instr\instructions_utils.h"
 #include  <SFML/Graphics.hpp>
 
 const int PROC_DEFAULT_RAM_SIZE = 400;
