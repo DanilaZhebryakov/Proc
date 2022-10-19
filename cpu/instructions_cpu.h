@@ -9,7 +9,6 @@ struct Instruction{
     uint8_t code;
     procError_t (*func)(Processor*);
     const char* name;
-    instrArgReq_t arg_req;
 };
 
 extern const struct Instruction PROC_INSTR_LIST[];

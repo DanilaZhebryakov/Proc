@@ -107,26 +107,26 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
         return nullptr;
     }
 
-    for (label* j = labels; j < label_place_ptr; j++){
+    for (label* l_place = labels; l_place < label_place_ptr; l_place++){
         bool found_lbl = false;
-        for (label* i = labels_last; i > label_addr_ptr; i--){
-            size_t t = stricmp_len(i->name, j->name);
-            if (i->name[t] == ':' && (j->name[t] == ' ' || j->name[t] == '\0' || j->name[t] == '+')){
+        for (label* l_def = labels_last; l_def > label_addr_ptr; l_def--){
+            size_t t = stricmp_len(l_def->name, l_place->name);
+            if (l_def->name[t] == ':' && (l_place->name[t] == '\0' || strchr(" +-", l_place->name[t]))){
                 if(found_lbl){
-                    error_log("Multiple definitions of label %s found\n", i->name);
+                    error_log("Multiple definitions of label %s found\n", l_def->name);
                     compilation_error = true;
                     if(stop_on_err){
                         break;
                     }
                 }
-                info_log("add label %s (%X) to constant at %X\n", i->name, i->addr - out_prog_start , j->addr - out_prog_start);
-                *((PROC_DATA_T*)j->addr) += i->addr - out_prog_start;
+                info_log("add label %s (%X) to constant at %X\n", l_def->name, l_def->addr - out_prog_start , l_place->addr - out_prog_start);
+                *((PROC_DATA_T*)l_place->addr) += l_def->addr - out_prog_start;
                 found_lbl = true;
             }
         }
         if(!found_lbl){
             compilation_error = true;
-            error_log("Label %s undefined\n", j->name);
+            error_log("Label %s undefined\n", l_place->name);
         }
         if (compilation_error && stop_on_err){
             break;

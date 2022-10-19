@@ -19,10 +19,11 @@ $$
 
 
 const struct Instruction PROC_INSTR_LIST[] = {
-$A {%c%[, %f, "%n", %a%]},
+$A {%c%[, %f, "%n"%]},
 };
 const int PROC_INSTR_COUNT = sizeof(PROC_INSTR_LIST) / sizeof(Instruction);
 $!
+
 
 $F asm\instructions_asm.cpp
 $$
@@ -37,6 +38,7 @@ $L {%c, "%n", %a},
 const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);
 $!
 
+
 $F disasm\instructions_disasm.cpp
 $$
 #include <stdio.h>
@@ -45,7 +47,7 @@ $$
 //DO NOT CHANGE
 
 const struct CompileInstruction CMP_INSTR_LIST[] = {
-$L {%c, "%n", %a},
+$A {%c,%["%n", %a%]},
 };
 const int CMP_INSTR_COUNT = sizeof(CMP_INSTR_LIST) / sizeof(CompileInstruction);
 $!
