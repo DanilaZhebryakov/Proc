@@ -18,6 +18,34 @@ static size_t stricmp_len(const char* str1, const char* str2) {
     return str1 - str1_start;
 }
 
+static bool compileInstruction(const char* str, uint8_t** output_ptr, size_t ip, label**  label_place_ptr){
+    for (int i = 0; i < CMP_INSTR_COUNT; i++){
+        size_t scl = stricmp_len(str, CMP_INSTR_LIST[i].name);
+        if (!isgraph(str[scl]) && CMP_INSTR_LIST[i].name[scl] == '\0'){
+            **output_ptr = CMP_INSTR_LIST[i].code;
+            *output_ptr += 1;
+
+            int arg_size = parseInstrArg(str + scl, *output_ptr, label_place_ptr);
+
+            printf_log("%6s (%02X) arg%X(+%d)\n",CMP_INSTR_LIST[i].name, CMP_INSTR_LIST[i].code, ((**output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
+            if (arg_size == -1){
+                printf_log("%s\n", str+scl);
+                return false;
+            }
+            if (!matchesArgReq(**output_ptr, CMP_INSTR_LIST[i].arg_req)){
+                error_log("Error : instruction %s at line %d got incorrect argument\n", CMP_INSTR_LIST[i].name, ip);
+                return false;
+            }
+            *output_ptr += arg_size;
+            return true;
+        }
+    }
+
+    error_log("Error : Unknown instruction %s at line %d\n", str, ip);
+    return false;
+}
+
+
 uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
     initLiteralReplaceArray();
 
@@ -60,38 +88,11 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
             printf_log(">%s\n", str);
             continue;
         }
-        int instr_status = 0; //0 not found 1 ok -1 error
-        for (int i = 0; i < CMP_INSTR_COUNT; i++){
-            size_t scl = stricmp_len(str, CMP_INSTR_LIST[i].name);
-            if (!isgraph(str[scl]) && CMP_INSTR_LIST[i].name[scl] == '\0'){
-                instr_status = 1;
-                *output_ptr = CMP_INSTR_LIST[i].code;
-                output_ptr++;
-
-                int arg_size = parseInstrArg(str + scl, output_ptr, &label_place_ptr);
-
-                printf_log("%6s (%02X) arg%X(+%d)\n",CMP_INSTR_LIST[i].name, CMP_INSTR_LIST[i].code, ((*output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
-                if (arg_size == -1){
-                    instr_status = -1;
-                    printf("%s\n", str+scl);
-                    continue;
-                }
-                if (!matchesArgReq(*output_ptr, CMP_INSTR_LIST[i].arg_req)){
-                    instr_status = -1;
-                    error_log("Error : instruction %s at line %d got incorrect argument\n", CMP_INSTR_LIST[i].name, ip);
-                    continue;
-                }
-                output_ptr += arg_size;
+        if(!compileInstruction(str, &output_ptr, ip, &label_place_ptr)){
+            compilation_error = true;
+            if (compilation_error && stop_on_err){
                 break;
             }
-        }
-
-        if (instr_status != 1){
-            error_log("Error : Unknown instruction %s at line %d\n", str, ip);
-            compilation_error = true;
-        }
-        if (compilation_error && stop_on_err){
-            break;
         }
     }
 
