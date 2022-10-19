@@ -15,12 +15,7 @@ static size_t stricmp_len(const char* str1, const char* str2) {
     while (*str2 != '\0' && tolower(*str1) == tolower(*str2)) {
         str1++; str2++;
     }
-    if(*str2 == '\0'){
-        return str1 - str1_start;
-    }
-    else{
-        return 0;
-    }
+    return str1 - str1_start;
 }
 
 uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
@@ -67,18 +62,18 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
         }
         int instr_status = 0; //0 not found 1 ok -1 error
         for (int i = 0; i < CMP_INSTR_COUNT; i++){
-            size_t t = stricmp_len(str, CMP_INSTR_LIST[i].name);
-            if (!isgraph(str[t])){
+            size_t scl = stricmp_len(str, CMP_INSTR_LIST[i].name);
+            if (!isgraph(str[scl]) && CMP_INSTR_LIST[i].name[scl] == '\0'){
                 instr_status = 1;
                 *output_ptr = CMP_INSTR_LIST[i].code;
                 output_ptr++;
 
-                int arg_size = parseInstrArg(str + t, output_ptr, &label_place_ptr);
+                int arg_size = parseInstrArg(str + scl, output_ptr, &label_place_ptr);
 
                 printf_log("%6s (%02X) arg%X(+%d)\n",CMP_INSTR_LIST[i].name, CMP_INSTR_LIST[i].code, ((*output_ptr) & (~MASK_CMD_CODE)) >> 4, arg_size-1);
                 if (arg_size == -1){
                     instr_status = -1;
-                    printf("%s\n", str+t);
+                    printf("%s\n", str+scl);
                     continue;
                 }
                 if (!matchesArgReq(*output_ptr, CMP_INSTR_LIST[i].arg_req)){
@@ -110,8 +105,8 @@ uint8_t* asmCompile(const Text input_txt, size_t* size_ptr, bool stop_on_err){
     for (label* l_place = labels; l_place < label_place_ptr; l_place++){
         bool found_lbl = false;
         for (label* l_def = labels_last; l_def > label_addr_ptr; l_def--){
-            size_t t = stricmp_len(l_def->name, l_place->name);
-            if (l_def->name[t] == ':' && (l_place->name[t] == '\0' || strchr(" +-", l_place->name[t]))){
+            size_t scl = stricmp_len(l_def->name, l_place->name);
+            if (l_def->name[scl] == ':' && (l_place->name[scl] == '\0' || strchr(" +-", l_place->name[scl]))){
                 if(found_lbl){
                     error_log("Multiple definitions of label %s found\n", l_def->name);
                     compilation_error = true;
